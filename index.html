@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema Web - Kaneko</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <section id="telaLogin" class="tela-login">
+    <div class="login-card">
+      <h1>Sistema Web - Kaneko</h1>
+      <p>Acesse sua conta para continuar</p>
+
+      <form id="formLogin">
+        <div>
+          <label for="loginUsuario">Usuário:</label>
+          <input id="loginUsuario" type="text" placeholder="Digite o usuário" required />
+        </div>
+
+        <div>
+          <label for="loginSenha">Senha:</label>
+          <input id="loginSenha" type="password" placeholder="Digite a senha" required />
+        </div>
+
+        <button class="btn btn-azul login-btn" type="submit">Entrar</button>
+
+        <p id="loginMensagem" class="login-mensagem"></p>
+
+        <p class="login-ajuda">Usuários: Admin, Gerente, Vendedor ou Estoquista | Senha: 1234</p>
+      </form>
+    </div>
+  </section>
+
+  <div id="sistemaPrincipal" class="sistema-principal oculto">
+    <header class="cabecalho">
+      <div class="cabecalho-esquerda">
+        <h1>Sistema Web - Kaneko</h1>
+
+        <nav class="menu-principal" aria-label="Navegação principal">
+          <button class="menu-btn ativo" data-tela="dashboard">Dashboard</button>
+          <button class="menu-btn" data-tela="venda">Venda</button>
+          <button class="menu-btn" data-tela="clientes">Clientes</button>
+          <button class="menu-btn" data-tela="produtos">Produtos</button>
+          <button class="menu-btn" data-tela="fornecedores">Fornecedores</button>
+          <button class="menu-btn" data-tela="funcionarios">Funcionários</button>
+          <button class="menu-btn" data-tela="paises">Países</button>
+          <button class="menu-btn" data-tela="estados">Estados</button>
+          <button class="menu-btn" data-tela="cidades">Cidades</button>
+          <button class="menu-btn" data-tela="cargos">Cargos</button>
+          <button class="menu-btn" data-tela="categorias">Categorias</button>
+          <button class="menu-btn" data-tela="condicoes">Condições</button>
+          <button class="menu-btn" data-tela="historico">Histórico</button>
+        </nav>
+      </div>
+
+      <div class="cabecalho-direita">
+        <button id="btnTema" class="btn-tema">
+          🌙 Tema
+        </button>
+
+        <button id="btnSair" class="btn btn-vermelho btn-sair-menu">
+          🚪 Sair
+        </button>
+
+        <span id="dataHora" class="data-hora"></span>
+      </div>
+    </header>
+
+    <main>
+      <!-- ========================= -->
+      <!-- DASHBOARD -->
+      <!-- ========================= -->
+      <section id="telaDashboard" class="tela ativa dashboard-page">
+        <div class="dashboard-header">
+          <div>
+            <h2>Dashboard</h2>
+            <p>Resumo geral do sistema de vendas</p>
+          </div>
+
+          <button class="btn btn-azul" type="button" id="btnAtualizarDashboard">
+            Atualizar
+          </button>
+        </div>
+
+        <div class="dashboard-cards">
+          <div class="dashboard-card">
+            <span class="dashboard-label">Total de vendas</span>
+            <strong id="dashTotalVendas">0</strong>
+            <small>Vendas finalizadas</small>
+          </div>
+
+          <div class="dashboard-card destaque-verde">
+            <span class="dashboard-label">Valor total vendido</span>
+            <strong id="dashValorVendido">R$ 0,00</strong>
+            <small>Soma de todas as vendas</small>
+          </div>
+
+          <div class="dashboard-card">
+            <span class="dashboard-label">Produtos cadastrados</span>
+            <strong id="dashProdutos">0</strong>
+            <small>Total no cadastro</small>
+          </div>
+
+          <div class="dashboard-card">
+            <span class="dashboard-label">Clientes cadastrados</span>
+            <strong id="dashClientes">0</strong>
+            <small>Total no cadastro</small>
+          </div>
+
+          <div class="dashboard-card">
+            <span class="dashboard-label">Fornecedores cadastrados</span>
+            <strong id="dashFornecedores">0</strong>
+            <small>Total no cadastro</small>
+          </div>
+
+          <div class="dashboard-card">
+            <span class="dashboard-label">Funcionários cadastrados</span>
+            <strong id="dashFuncionarios">0</strong>
+            <small>Total no cadastro</small>
+          </div>
+
+          <div class="dashboard-card destaque-alerta">
+            <span class="dashboard-label">Produtos sem estoque</span>
+            <strong id="dashSemEstoque">0</strong>
+            <small>Precisam de reposição</small>
+          </div>
+
+          <div class="dashboard-card destaque-azul">
+            <span class="dashboard-label">Ticket médio</span>
+            <strong id="dashTicketMedio">R$ 0,00</strong>
+            <small>Média por venda</small>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="card dashboard-box">
+            <h3>Últimas vendas</h3>
+
+            <div class="tabela-wrapper dashboard-tabela">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Data</th>
+                    <th>Cliente</th>
+                    <th>Funcionário</th>
+                    <th>Pagamento</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody id="dashUltimasVendasTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card dashboard-box">
+            <h3>Produtos mais vendidos</h3>
+
+            <div class="tabela-wrapper dashboard-tabela">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Qtd. vendida</th>
+                    <th>Total vendido</th>
+                  </tr>
+                </thead>
+                <tbody id="dashProdutosMaisVendidosTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- VENDA -->
+      <!-- ========================= -->
+      <section id="telaVenda" class="tela">
+        <div class="conteudo">
+          <section class="coluna coluna-esquerda">
+            <div class="card produto-card">
+              <h2>Produto</h2>
+
+              <label for="clienteVendaSelect">Cliente:</label>
+              <select id="clienteVendaSelect"></select>
+
+              <label for="funcionarioVendaSelect">Funcionário/Vendedor:</label>
+              <select id="funcionarioVendaSelect"></select>
+
+              <label for="produtoSelect">Selecione o produto:</label>
+              <select id="produtoSelect"></select>
+
+              <div class="linha-info">
+                <span>Preço:</span>
+                <strong id="precoProduto" class="valor-verde">R$ 0,00</strong>
+              </div>
+
+              <div class="linha-info">
+                <span>Estoque:</span>
+                <strong id="estoqueProduto" class="valor-azul">0</strong>
+              </div>
+
+              <div class="adicionar-area">
+                <div>
+                  <label for="quantidadeInput">Quantidade:</label>
+                  <input id="quantidadeInput" type="number" min="1" inputmode="numeric" />
+                </div>
+
+                <button id="btnAdicionar" class="btn btn-verde">Adicionar</button>
+              </div>
+            </div>
+
+            <div class="card recibo-card">
+              <h2>Recibo da Última Venda</h2>
+              <textarea id="reciboTexto" readonly>O recibo será gerado após finalizar a venda.</textarea>
+            </div>
+          </section>
+
+          <section class="card itens-card">
+            <h2>Itens da Venda</h2>
+
+            <div class="tabela-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Produto</th>
+                    <th>Preço</th>
+                    <th>Qtd</th>
+                    <th>Unidade</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody id="itensTabela"></tbody>
+              </table>
+            </div>
+
+            <button id="btnRemover" class="btn btn-vermelho">Remover Item</button>
+          </section>
+
+          <section class="card resumo-card">
+            <h2>Resumo / Pagamento</h2>
+
+            <label>Subtotal:</label>
+            <div id="subtotalValor" class="subtotal">R$ 0,00</div>
+
+            <label for="descontoInput">Desconto %:</label>
+            <input id="descontoInput" type="number" min="0" max="100" step="1" />
+
+            <label>Total a pagar:</label>
+            <div id="totalValor" class="total">R$ 0,00</div>
+
+            <label for="formaPagamentoSelect">Forma de pagamento:</label>
+            <select id="formaPagamentoSelect">
+              <option value="">Selecionar</option>
+            </select>
+
+            <label for="condicaoPagamentoVendaSelect">Condição de pagamento:</label>
+            <select id="condicaoPagamentoVendaSelect">
+              <option value="">Selecionar</option>
+            </select>
+
+            <label for="recebidoInput">Valor recebido:</label>
+            <input id="recebidoInput" type="text" inputmode="decimal" />
+
+            <label>Troco:</label>
+            <div id="trocoValor" class="troco">R$ 0,00</div>
+
+            <button id="btnFinalizar" class="btn btn-verde btn-grande">Finalizar Venda</button>
+            <button id="btnLimpar" class="btn btn-azul btn-grande">Nova Venda / Limpar</button>
+            <button id="btnSair" class="btn btn-vermelho btn-grande">Sair</button>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- CLIENTES -->
+      <!-- ========================= -->
+      <section id="telaClientes" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Clientes</h2>
+
+            <form id="formCliente" class="form-grid">
+              <input type="hidden" id="clienteCodigoCadastro" />
+
+              <div>
+                <label for="clienteNomeCadastro">Cliente:</label>
+                <input id="clienteNomeCadastro" required />
+              </div>
+
+              <div>
+                <label for="clienteApelidoCadastro">Apelido:</label>
+                <input id="clienteApelidoCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteDataNascimentoCadastro">Data de nascimento:</label>
+                <input id="clienteDataNascimentoCadastro" type="date" />
+              </div>
+
+              <div>
+                <label for="clienteCpfCadastro">CPF/CNPJ:</label>
+                <input id="clienteCpfCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteRgCadastro">RG:</label>
+                <input id="clienteRgCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteEmailCadastro">E-mail:</label>
+                <input id="clienteEmailCadastro" type="email" />
+              </div>
+
+              <div>
+                <label for="clienteCelularCadastro">Celular:</label>
+                <input id="clienteCelularCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteTelefoneCadastro">Telefone:</label>
+                <input id="clienteTelefoneCadastro" />
+              </div>
+
+              <div class="campo-largo">
+                <label for="clienteEnderecoCadastro">Endereço:</label>
+                <input id="clienteEnderecoCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteNumeroCadastro">Número:</label>
+                <input id="clienteNumeroCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteComplementoCadastro">Complemento:</label>
+                <input id="clienteComplementoCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteBairroCadastro">Bairro:</label>
+                <input id="clienteBairroCadastro" />
+              </div>
+
+              <div>
+                <label for="clientePaisCadastro">País:</label>
+                <select id="clientePaisCadastro">
+                  <option value="1">Brasil</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteEstadoCadastro">Estado:</label>
+                <select id="clienteEstadoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="AC">AC - Acre</option>
+                  <option value="AL">AL - Alagoas</option>
+                  <option value="AP">AP - Amapá</option>
+                  <option value="AM">AM - Amazonas</option>
+                  <option value="BA">BA - Bahia</option>
+                  <option value="CE">CE - Ceará</option>
+                  <option value="DF">DF - Distrito Federal</option>
+                  <option value="ES">ES - Espírito Santo</option>
+                  <option value="GO">GO - Goiás</option>
+                  <option value="MA">MA - Maranhão</option>
+                  <option value="MT">MT - Mato Grosso</option>
+                  <option value="MS">MS - Mato Grosso do Sul</option>
+                  <option value="MG">MG - Minas Gerais</option>
+                  <option value="PA">PA - Pará</option>
+                  <option value="PB">PB - Paraíba</option>
+                  <option value="PR">PR - Paraná</option>
+                  <option value="PE">PE - Pernambuco</option>
+                  <option value="PI">PI - Piauí</option>
+                  <option value="RJ">RJ - Rio de Janeiro</option>
+                  <option value="RN">RN - Rio Grande do Norte</option>
+                  <option value="RS">RS - Rio Grande do Sul</option>
+                  <option value="RO">RO - Rondônia</option>
+                  <option value="RR">RR - Roraima</option>
+                  <option value="SC">SC - Santa Catarina</option>
+                  <option value="SP">SP - São Paulo</option>
+                  <option value="SE">SE - Sergipe</option>
+                  <option value="TO">TO - Tocantins</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteCidadeCadastro">Cidade:</label>
+                <select id="clienteCidadeCadastro">
+                  <option value="">Selecione</option>
+                  <option value="1">São Paulo</option>
+                  <option value="2">Rio de Janeiro</option>
+                  <option value="3">Belo Horizonte</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteCepCadastro">CEP:</label>
+                <input id="clienteCepCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteAtivoCadastro">Ativo:</label>
+                <select id="clienteAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteGeneroCadastro">Gênero:</label>
+                <select id="clienteGeneroCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Outro">Outro</option>
+                  <option value="Não informado">Não informado</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteFormaPagamentoCadastro">Condição de pagamento padrão:</label>
+                <select id="clienteFormaPagamentoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Pix">Pix</option>
+                  <option value="Cartão de Débito">Cartão de Débito</option>
+                  <option value="Cartão de Crédito">Cartão de Crédito</option>
+                  <option value="Boleto">Boleto</option>
+                  <option value="Crediário">Crediário</option>
+                  <option value="Transferência Bancária">Transferência Bancária</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteLimiteCreditoCadastro">Limite crédito:</label>
+                <input id="clienteLimiteCreditoCadastro" inputmode="decimal" placeholder="Ex.: 1500,00" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Cliente</button>
+                <button class="btn btn-azul" type="button" id="btnNovoCliente">Novo</button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Cliente</th>
+                    <th>Apelido</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Celular</th>
+                    <th>E-mail</th>
+                    <th>Cidade</th>
+                    <th>Pagamento</th>
+                    <th>Ativo</th>
+                    <th>Limite</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="clientesCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- PRODUTOS -->
+      <!-- ========================= -->
+      <section id="telaProdutos" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Produtos</h2>
+
+            <form id="formProduto" class="form-grid">
+              <input type="hidden" id="produtoCodigoCadastro" />
+
+              <div>
+                <label for="produtoNomeCadastro">Produto:</label>
+                <input id="produtoNomeCadastro" required />
+              </div>
+
+              <div>
+                <label for="produtoPrecoCadastro">Preço:</label>
+                <input id="produtoPrecoCadastro" inputmode="decimal" required />
+              </div>
+
+              <div>
+                <label for="produtoEstoqueCadastro">Estoque:</label>
+                <input id="produtoEstoqueCadastro" type="number" min="0" required />
+              </div>
+
+              <div>
+                <label for="produtoUnidadeCadastro">Unidade:</label>
+                <select id="produtoUnidadeCadastro">
+                  <option value="UN">UN - Unidade</option>
+                  <option value="CX">CX - Caixa</option>
+                  <option value="KG">KG - Quilograma</option>
+                  <option value="G">G - Grama</option>
+                  <option value="L">L - Litro</option>
+                  <option value="ML">ML - Mililitro</option>
+                  <option value="M">M - Metro</option>
+                  <option value="CM">CM - Centímetro</option>
+                  <option value="PCT">PCT - Pacote</option>
+                  <option value="PAR">PAR - Par</option>
+                  <option value="DZ">DZ - Dúzia</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="produtoCategoriaCadastro">Categoria:</label>
+                <select id="produtoCategoriaCadastro">
+                  <option value="">Selecione</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Produto</button>
+                <button class="btn btn-azul" type="button" id="btnNovoProduto">Novo</button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Produto</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th>Unidade</th>
+                    <th>Categoria</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="produtosCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card cadastro-card">
+            <h2>Produtos sem estoque</h2>
+
+            <p id="mensagemSemEstoque" class="mensagem-estoque">
+              Nenhum produto sem estoque no momento.
+            </p>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th>Unidade</th>
+                    <th>Mensagem</th>
+                  </tr>
+                </thead>
+                <tbody id="produtosSemEstoqueTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- FORNECEDORES -->
+      <!-- ========================= -->
+      <section id="telaFornecedores" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Fornecedores</h2>
+
+            <form id="formFornecedor" class="form-grid">
+              <input type="hidden" id="fornecedorCodigoCadastro" />
+
+              <div>
+                <label for="fornecedorNomeCadastro">Fornecedor:</label>
+                <input id="fornecedorNomeCadastro" required />
+              </div>
+
+              <div>
+                <label for="fornecedorApelidoCadastro">Apelido:</label>
+                <input id="fornecedorApelidoCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorDataNascimentoCadastro">Data de nascimento:</label>
+                <input id="fornecedorDataNascimentoCadastro" type="date" />
+              </div>
+
+              <div>
+                <label for="fornecedorCpfCnpjCadastro">CPF/CNPJ:</label>
+                <input id="fornecedorCpfCnpjCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorRgCadastro">RG:</label>
+                <input id="fornecedorRgCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorEmailCadastro">E-mail:</label>
+                <input id="fornecedorEmailCadastro" type="email" />
+              </div>
+
+              <div>
+                <label for="fornecedorCelularCadastro">Celular:</label>
+                <input id="fornecedorCelularCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorTelefoneCadastro">Telefone:</label>
+                <input id="fornecedorTelefoneCadastro" />
+              </div>
+
+              <div class="campo-largo">
+                <label for="fornecedorEnderecoCadastro">Endereço:</label>
+                <input id="fornecedorEnderecoCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorNumeroCadastro">Número:</label>
+                <input id="fornecedorNumeroCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorComplementoCadastro">Complemento:</label>
+                <input id="fornecedorComplementoCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorBairroCadastro">Bairro:</label>
+                <input id="fornecedorBairroCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorPaisCadastro">País:</label>
+                <select id="fornecedorPaisCadastro">
+                  <option value="1">Brasil</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorEstadoCadastro">Estado:</label>
+                <select id="fornecedorEstadoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="AC">AC - Acre</option>
+                  <option value="AL">AL - Alagoas</option>
+                  <option value="AP">AP - Amapá</option>
+                  <option value="AM">AM - Amazonas</option>
+                  <option value="BA">BA - Bahia</option>
+                  <option value="CE">CE - Ceará</option>
+                  <option value="DF">DF - Distrito Federal</option>
+                  <option value="ES">ES - Espírito Santo</option>
+                  <option value="GO">GO - Goiás</option>
+                  <option value="MA">MA - Maranhão</option>
+                  <option value="MT">MT - Mato Grosso</option>
+                  <option value="MS">MS - Mato Grosso do Sul</option>
+                  <option value="MG">MG - Minas Gerais</option>
+                  <option value="PA">PA - Pará</option>
+                  <option value="PB">PB - Paraíba</option>
+                  <option value="PR">PR - Paraná</option>
+                  <option value="PE">PE - Pernambuco</option>
+                  <option value="PI">PI - Piauí</option>
+                  <option value="RJ">RJ - Rio de Janeiro</option>
+                  <option value="RN">RN - Rio Grande do Norte</option>
+                  <option value="RS">RS - Rio Grande do Sul</option>
+                  <option value="RO">RO - Rondônia</option>
+                  <option value="RR">RR - Roraima</option>
+                  <option value="SC">SC - Santa Catarina</option>
+                  <option value="SP">SP - São Paulo</option>
+                  <option value="SE">SE - Sergipe</option>
+                  <option value="TO">TO - Tocantins</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorCidadeCadastro">Cidade:</label>
+                <select id="fornecedorCidadeCadastro">
+                  <option value="">Selecione</option>
+                  <option value="1">São Paulo</option>
+                  <option value="2">Rio de Janeiro</option>
+                  <option value="3">Belo Horizonte</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorCepCadastro">CEP:</label>
+                <input id="fornecedorCepCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorAtivoCadastro">Ativo:</label>
+                <select id="fornecedorAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorGeneroCadastro">Gênero:</label>
+                <select id="fornecedorGeneroCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Outro">Outro</option>
+                  <option value="Não informado">Não informado</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorFormaPagamentoCadastro">Condição de pagamento padrão:</label>
+                <select id="fornecedorFormaPagamentoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Pix">Pix</option>
+                  <option value="Cartão de Débito">Cartão de Débito</option>
+                  <option value="Cartão de Crédito">Cartão de Crédito</option>
+                  <option value="Boleto">Boleto</option>
+                  <option value="Crediário">Crediário</option>
+                  <option value="Transferência Bancária">Transferência Bancária</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorLimiteCreditoCadastro">Limite crédito:</label>
+                <input id="fornecedorLimiteCreditoCadastro" inputmode="decimal" placeholder="Ex.: 1500,00" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Fornecedor</button>
+                <button class="btn btn-azul" type="button" id="btnNovoFornecedor">Novo</button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Fornecedor</th>
+                    <th>Apelido</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Celular</th>
+                    <th>E-mail</th>
+                    <th>Cidade</th>
+                    <th>Pagamento</th>
+                    <th>Ativo</th>
+                    <th>Limite</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="fornecedoresCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- FUNCIONÁRIOS -->
+      <!-- ========================= -->
+      <section id="telaFuncionarios" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Funcionários</h2>
+
+            <form id="formFuncionario" class="form-grid">
+              <input type="hidden" id="funcionarioCodigoCadastro" />
+
+              <div>
+                <label for="funcionarioNomeCadastro">Funcionário:</label>
+                <input id="funcionarioNomeCadastro" required />
+              </div>
+
+              <div>
+                <label for="funcionarioApelidoCadastro">Apelido:</label>
+                <input id="funcionarioApelidoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioDataNascimentoCadastro">Data de nascimento:</label>
+                <input id="funcionarioDataNascimentoCadastro" type="date" />
+              </div>
+
+              <div>
+                <label for="funcionarioCpfCadastro">CPF:</label>
+                <input id="funcionarioCpfCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioRgCadastro">RG:</label>
+                <input id="funcionarioRgCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCnhCadastro">CNH:</label>
+                <input id="funcionarioCnhCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCarteiraTrabalhoCadastro">Carteira de Trabalho:</label>
+                <input id="funcionarioCarteiraTrabalhoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCargoCadastro">Cargo:</label>
+                <select id="funcionarioCargoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="1">Administrador</option>
+                  <option value="2">Gerente</option>
+                  <option value="3">Vendedor</option>
+                  <option value="4">Operador de Caixa</option>
+                  <option value="5">Estoquista</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioEmailCadastro">E-mail:</label>
+                <input id="funcionarioEmailCadastro" type="email" />
+              </div>
+
+              <div>
+                <label for="funcionarioCelularCadastro">Celular:</label>
+                <input id="funcionarioCelularCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioTelefoneCadastro">Telefone:</label>
+                <input id="funcionarioTelefoneCadastro" />
+              </div>
+
+              <div class="campo-largo">
+                <label for="funcionarioEnderecoCadastro">Endereço:</label>
+                <input id="funcionarioEnderecoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioNumeroCadastro">Número:</label>
+                <input id="funcionarioNumeroCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioComplementoCadastro">Complemento:</label>
+                <input id="funcionarioComplementoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioBairroCadastro">Bairro:</label>
+                <input id="funcionarioBairroCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioPaisCadastro">País:</label>
+                <select id="funcionarioPaisCadastro">
+                  <option value="">Selecione</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioEstadoCadastro">Estado:</label>
+                <select id="funcionarioEstadoCadastro">
+                  <option value="">Selecione</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioCidadeCadastro">Cidade:</label>
+                <select id="funcionarioCidadeCadastro">
+                  <option value="">Selecione</option>
+                  <option value="1">São Paulo</option>
+                  <option value="2">Rio de Janeiro</option>
+                  <option value="3">Belo Horizonte</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioCepCadastro">CEP:</label>
+                <input id="funcionarioCepCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioSalarioCadastro">Salário:</label>
+                <input id="funcionarioSalarioCadastro" inputmode="decimal" placeholder="Ex.: 2500,00" />
+              </div>
+
+              <div>
+                <label for="funcionarioAtivoCadastro">Ativo:</label>
+                <select id="funcionarioAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioGeneroCadastro">Gênero:</label>
+                <select id="funcionarioGeneroCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Outro">Outro</option>
+                  <option value="Não informado">Não informado</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Funcionário</button>
+                <button class="btn btn-azul" type="button" id="btnNovoFuncionario">Novo</button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Funcionário</th>
+                    <th>CPF</th>
+                    <th>CNH</th>
+                    <th>Cargo</th>
+                    <th>Celular</th>
+                    <th>Ativo</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="funcionariosCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- PAÍSES -->
+      <!-- ========================= -->
+      <section id="telaPaises" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Países</h2>
+
+            <form id="formPais" class="form-grid">
+              <input type="hidden" id="paisCodigoCadastro" />
+
+              <div>
+                <label for="paisNomeCadastro">País:</label>
+                <input id="paisNomeCadastro" placeholder="Ex.: Brasil" />
+              </div>
+
+              <div>
+                <label for="paisSiglaCadastro">Sigla:</label>
+                <input id="paisSiglaCadastro" placeholder="Ex.: BR" maxlength="5" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar País
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnNovoPais">
+                  Novo
+                </button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>País</th>
+                    <th>Sigla</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="paisesCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- ESTADOS -->
+      <!-- ========================= -->
+      <section id="telaEstados" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Estados</h2>
+
+            <form id="formEstado" class="form-grid">
+              <input type="hidden" id="estadoCodigoCadastro" />
+
+              <div>
+                <label for="estadoPaisCadastro">País:</label>
+                <select id="estadoPaisCadastro">
+                  <option value="1">Brasil</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="estadoNomeCadastro">Estado:</label>
+                <input id="estadoNomeCadastro" placeholder="Ex.: São Paulo" />
+              </div>
+
+              <div>
+                <label for="estadoSiglaCadastro">Sigla:</label>
+                <input id="estadoSiglaCadastro" placeholder="Ex.: SP" maxlength="2" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Estado
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnNovoEstado">
+                  Novo
+                </button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>País</th>
+                    <th>Estado</th>
+                    <th>Sigla</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="estadosCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- CIDADES -->
+      <!-- ========================= -->
+      <section id="telaCidades" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Cidades</h2>
+
+            <form id="formCidade" class="form-grid">
+              <input type="hidden" id="cidadeCodigoCadastro" />
+
+              <div>
+                <label for="cidadeEstadoCadastro">Estado:</label>
+                <select id="cidadeEstadoCadastro">
+                  <option value="25">SP - São Paulo</option>
+                  <option value="19">RJ - Rio de Janeiro</option>
+                  <option value="13">MG - Minas Gerais</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="cidadeNomeCadastro">Cidade:</label>
+                <input id="cidadeNomeCadastro" placeholder="Ex.: São Paulo" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Cidade
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnNovoCidade">
+                  Novo
+                </button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Estado</th>
+                    <th>Cidade</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="cidadesCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- CARGOS -->
+      <!-- ========================= -->
+      <section id="telaCargos" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Cadastro de Cargos</h2>
+
+            <form id="formCargo" class="form-grid">
+              <input type="hidden" id="cargoCodigoCadastro" />
+
+              <div>
+                <label for="cargoNomeCadastro">Cargo:</label>
+                <input id="cargoNomeCadastro" placeholder="Ex.: Vendedor" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Cargo
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnNovoCargo">
+                  Novo
+                </button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Cargo</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="cargosCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- CATEGORIAS -->
+      <!-- ========================= -->
+      <section id="telaCategorias" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Categorias de Produtos</h2>
+
+            <form id="formCategoria" class="form-grid">
+              <input type="hidden" id="categoriaCodigoCadastro" />
+
+              <div>
+                <label for="categoriaNomeCadastro">Categoria:</label>
+                <input id="categoriaNomeCadastro" placeholder="Ex.: Papelaria" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Categoria
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnNovoCategoria">
+                  Novo
+                </button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Categoria</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="categoriasCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- CONDIÇÕES DE PAGAMENTO -->
+      <!-- ========================= -->
+      <section id="telaCondicoes" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-card">
+            <h2>Condições de Pagamento</h2>
+
+            <form id="formCondicaoPagamento" class="form-grid">
+              <input type="hidden" id="condicaoCodigoCadastro" />
+
+              <div>
+                <label for="condicaoDescricaoCadastro">Descrição:</label>
+                <input id="condicaoDescricaoCadastro" placeholder="Ex.: À vista" />
+              </div>
+
+              <div>
+                <label for="condicaoParcelasCadastro">Parcelas:</label>
+                <input id="condicaoParcelasCadastro" type="number" min="1" value="1" />
+              </div>
+
+              <div>
+                <label for="condicaoAtivoCadastro">Ativo:</label>
+                <select id="condicaoAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Condição
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnNovoCondicao">
+                  Novo
+                </button>
+              </div>
+            </form>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Condição</th>
+                    <th>Parcelas</th>
+                    <th>Ativo</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="condicoesPagamentoTabela"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- HISTÓRICO -->
+      <!-- ========================= -->
+      <section id="telaHistorico" class="tela">
+        <section class="card historico-card">
+          <div class="titulo-com-acoes">
+            <h2>Histórico de Vendas</h2>
+            <button id="btnLimparHistorico" class="btn btn-vermelho">Limpar Histórico</button>
+          </div>
+
+          <div class="tabela-wrapper tabela-historico">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nº</th>
+                  <th>Data</th>
+                  <th>Cliente</th>
+                  <th>Funcionário</th>
+                  <th>Pagamento</th>
+                  <th>Total</th>
+                  <th>Itens</th>
+                </tr>
+              </thead>
+              <tbody id="historicoTabela"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalPermissao" class="modal-permissao" role="dialog" aria-modal="true" aria-labelledby="modalPermissaoTitulo">
+    <div class="modal-permissao-fundo"></div>
+
+    <div class="modal-permissao-card">
+      <div class="modal-permissao-icone">🔒</div>
+      <h2 id="modalPermissaoTitulo">Acesso bloqueado</h2>
+      <p id="modalPermissaoTexto">Você não tem permissão para acessar esta área.</p>
+      <button id="btnFecharPermissao" class="btn btn-azul" type="button">Entendi</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

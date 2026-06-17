@@ -1,0 +1,16 @@
+{
+  "name": "sistema-venda-simples-api",
+  "version": "1.0.0",
+  "description": "API do Sistema de Vendas Simples",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "mysql2": "latest"
+  }
+}
