@@ -226,50 +226,94 @@ app.get('/api/cidades', async (_req, res) => {
       SELECT
         c.id_cidade AS codigo,
         c.cidade,
-        c.codigo_ibge AS codigoIbge,
+        c.ddd,
         c.id_estado AS idEstado,
         e.estado,
         e.uf,
-        e.id_pais AS idPais,
-        p.pais
+        c.data_cadastro AS dataCadastro,
+        c.data_alteracao AS dataAlteracao
       FROM cidades c
-      INNER JOIN estados e ON e.id_estado = c.id_estado
-      INNER JOIN paises p ON p.id_pais = e.id_pais
-      ORDER BY c.cidade
+      LEFT JOIN estados e ON e.id_estado = c.id_estado
+      ORDER BY c.id_cidade
     `);
+
     res.json(linhas);
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
 app.post('/api/cidades', async (req, res) => {
-  const { cidade, codigoIbge, idEstado } = req.body;
-  if (!cidade || !idEstado) {
-    return res.status(400).json({ erro: 'Informe estado e cidade.' });
+  const { idEstado, cidade, ddd } = req.body;
+
+  if (!idEstado || !cidade) {
+    return res.status(400).json({
+      erro: 'Informe estado e cidade.'
+    });
   }
 
   try {
     const [resultado] = await pool.query(
-      'INSERT INTO cidades (cidade, codigo_ibge, id_estado) VALUES (?, ?, ?)',
-      [cidade, codigoIbge || null, idEstado]
+      `
+      INSERT INTO cidades (
+        id_estado,
+        cidade,
+        ddd
+      ) VALUES (?, ?, ?)
+      `,
+      [
+        idEstado,
+        String(cidade).trim().toUpperCase(),
+        String(ddd || '').trim()
+      ]
     );
-    res.status(201).json({ codigo: resultado.insertId, cidade, codigoIbge, idEstado });
+
+    res.status(201).json({
+      codigo: resultado.insertId,
+      idEstado,
+      cidade,
+      ddd
+    });
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
 app.put('/api/cidades/:codigo', async (req, res) => {
-  const { cidade, codigoIbge, idEstado } = req.body;
+  const { idEstado, cidade, ddd } = req.body;
+
+  if (!idEstado || !cidade) {
+    return res.status(400).json({
+      erro: 'Informe estado e cidade.'
+    });
+  }
+
   try {
     await pool.query(
-      'UPDATE cidades SET cidade = ?, codigo_ibge = ?, id_estado = ? WHERE id_cidade = ?',
-      [cidade, codigoIbge || null, idEstado, req.params.codigo]
+      `
+      UPDATE cidades
+      SET id_estado = ?, cidade = ?, ddd = ?
+      WHERE id_cidade = ?
+      `,
+      [
+        idEstado,
+        String(cidade).trim().toUpperCase(),
+        String(ddd || '').trim(),
+        req.params.codigo
+      ]
     );
-    res.json({ mensagem: 'Cidade atualizada com sucesso.' });
+
+    res.json({
+      mensagem: 'Cidade atualizada com sucesso.'
+    });
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
@@ -351,6 +395,116 @@ app.delete('/api/cargos/:codigo', async (req, res) => {
   }
 });
 
+/* =========================
+   PARCELAS
+   ========================= */
+
+app.get('/api/parcelas', async (_req, res) => {
+  try {
+    const [linhas] = await pool.query(`
+      SELECT
+        id_parcela AS codigo,
+        descricao,
+        quantidade,
+        ativo
+      FROM parcelas
+      ORDER BY id_parcela
+    `);
+
+    res.json(linhas.map(item => ({
+      ...item,
+      ativo: Boolean(item.ativo)
+    })));
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.post('/api/parcelas', async (req, res) => {
+  const { descricao, quantidade, ativo } = req.body;
+
+  if (!descricao || !quantidade) {
+    return res.status(400).json({
+      erro: 'Informe descrição e quantidade de parcelas.'
+    });
+  }
+
+  try {
+    const [resultado] = await pool.query(
+      `
+      INSERT INTO parcelas (
+        descricao,
+        quantidade,
+        ativo
+      ) VALUES (?, ?, ?)
+      `,
+      [
+        descricao.trim(),
+        Number(quantidade) || 1,
+        ativo === false ? 0 : 1
+      ]
+    );
+
+    res.status(201).json({
+      codigo: resultado.insertId,
+      descricao,
+      quantidade,
+      ativo
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.put('/api/parcelas/:codigo', async (req, res) => {
+  const { descricao, quantidade, ativo } = req.body;
+
+  try {
+    await pool.query(
+      `
+      UPDATE parcelas
+      SET descricao = ?, quantidade = ?, ativo = ?
+      WHERE id_parcela = ?
+      `,
+      [
+        String(descricao || '').trim(),
+        Number(quantidade) || 1,
+        ativo === false ? 0 : 1,
+        req.params.codigo
+      ]
+    );
+
+    res.json({
+      mensagem: 'Parcela atualizada com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.delete('/api/parcelas/:codigo', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM parcelas WHERE id_parcela = ?',
+      [req.params.codigo]
+    );
+
+    res.json({
+      mensagem: 'Parcela excluída com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
 app.get('/api/condicoes-pagamento', async (_req, res) => {
   try {
     const [linhas] = await pool.query(`
@@ -402,6 +556,119 @@ app.delete('/api/condicoes-pagamento/:codigo', async (req, res) => {
     res.json({ mensagem: 'Condição excluída com sucesso.' });
   } catch (erro) {
     res.status(500).json({ erro: erro.message });
+  }
+});
+
+/* =========================
+   FORMAS DE PAGAMENTO
+   ========================= */
+
+app.get('/api/formas-pagamento', async (_req, res) => {
+  try {
+    const [linhas] = await pool.query(`
+      SELECT
+        id_forma_pagamento AS codigo,
+        forma_pagamento AS formaPagamento,
+        ativo,
+        data_cadastro AS dataCadastro,
+        data_alteracao AS dataAlteracao
+      FROM formas_pagamento
+      ORDER BY id_forma_pagamento
+    `);
+
+    res.json(linhas.map(item => ({
+      ...item,
+      ativo: Boolean(item.ativo)
+    })));
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.post('/api/formas-pagamento', async (req, res) => {
+  const { formaPagamento, ativo } = req.body;
+
+  if (!formaPagamento) {
+    return res.status(400).json({
+      erro: 'Informe a forma de pagamento.'
+    });
+  }
+
+  try {
+    const [resultado] = await pool.query(
+      `
+      INSERT INTO formas_pagamento (
+        forma_pagamento,
+        ativo
+      ) VALUES (?, ?)
+      `,
+      [
+        String(formaPagamento).trim().toUpperCase(),
+        ativo === false ? 0 : 1
+      ]
+    );
+
+    res.status(201).json({
+      codigo: resultado.insertId,
+      formaPagamento,
+      ativo
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.put('/api/formas-pagamento/:codigo', async (req, res) => {
+  const { formaPagamento, ativo } = req.body;
+
+  if (!formaPagamento) {
+    return res.status(400).json({
+      erro: 'Informe a forma de pagamento.'
+    });
+  }
+
+  try {
+    await pool.query(
+      `
+      UPDATE formas_pagamento
+      SET forma_pagamento = ?, ativo = ?
+      WHERE id_forma_pagamento = ?
+      `,
+      [
+        String(formaPagamento).trim().toUpperCase(),
+        ativo === false ? 0 : 1,
+        req.params.codigo
+      ]
+    );
+
+    res.json({
+      mensagem: 'Forma de pagamento atualizada com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.delete('/api/formas-pagamento/:codigo', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM formas_pagamento WHERE id_forma_pagamento = ?',
+      [req.params.codigo]
+    );
+
+    res.json({
+      mensagem: 'Forma de pagamento excluída com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
@@ -470,6 +737,228 @@ app.delete('/api/categorias/:codigo', async (req, res) => {
   }
 });
 
+/* =========================
+   UNIDADES
+   ========================= */
+
+app.get('/api/unidades', async (_req, res) => {
+  try {
+    const [linhas] = await pool.query(`
+      SELECT
+        id_unidade AS codigo,
+        unidade,
+        descricao,
+        ativo
+      FROM unidades
+      ORDER BY id_unidade
+    `);
+
+    res.json(linhas.map(item => ({
+      ...item,
+      ativo: Boolean(item.ativo)
+    })));
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.post('/api/unidades', async (req, res) => {
+  const { unidade, descricao, ativo } = req.body;
+
+  if (!unidade || !descricao) {
+    return res.status(400).json({
+      erro: 'Informe unidade e descrição.'
+    });
+  }
+
+  try {
+    const [resultado] = await pool.query(
+      `
+      INSERT INTO unidades (
+        unidade,
+        descricao,
+        ativo
+      ) VALUES (?, ?, ?)
+      `,
+      [
+        String(unidade).trim().toUpperCase(),
+        descricao.trim(),
+        ativo === false ? 0 : 1
+      ]
+    );
+
+    res.status(201).json({
+      codigo: resultado.insertId,
+      unidade,
+      descricao,
+      ativo
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.put('/api/unidades/:codigo', async (req, res) => {
+  const { unidade, descricao, ativo } = req.body;
+
+  try {
+    await pool.query(
+      `
+      UPDATE unidades
+      SET unidade = ?, descricao = ?, ativo = ?
+      WHERE id_unidade = ?
+      `,
+      [
+        String(unidade || '').trim().toUpperCase(),
+        String(descricao || '').trim(),
+        ativo === false ? 0 : 1,
+        req.params.codigo
+      ]
+    );
+
+    res.json({
+      mensagem: 'Unidade atualizada com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.delete('/api/unidades/:codigo', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM unidades WHERE id_unidade = ?',
+      [req.params.codigo]
+    );
+
+    res.json({
+      mensagem: 'Unidade excluída com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+/* =========================
+   MARCAS
+   ========================= */
+
+app.get('/api/marcas', async (_req, res) => {
+  try {
+    const [linhas] = await pool.query(`
+      SELECT
+        id_marca AS codigo,
+        marca,
+        ativo,
+        data_cadastro AS dataCadastro,
+        data_alteracao AS dataAlteracao
+      FROM marcas
+      ORDER BY id_marca
+    `);
+
+    res.json(linhas.map(item => ({
+      ...item,
+      ativo: Boolean(item.ativo)
+    })));
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.post('/api/marcas', async (req, res) => {
+  const { marca, ativo } = req.body;
+
+  if (!marca) {
+    return res.status(400).json({
+      erro: 'Informe a marca.'
+    });
+  }
+
+  try {
+    const [resultado] = await pool.query(
+      `
+      INSERT INTO marcas (
+        marca,
+        ativo
+      ) VALUES (?, ?)
+      `,
+      [
+        String(marca).trim().toUpperCase(),
+        ativo === false ? 0 : 1
+      ]
+    );
+
+    res.status(201).json({
+      codigo: resultado.insertId,
+      marca,
+      ativo
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.put('/api/marcas/:codigo', async (req, res) => {
+  const { marca, ativo } = req.body;
+
+  if (!marca) {
+    return res.status(400).json({
+      erro: 'Informe a marca.'
+    });
+  }
+
+  try {
+    await pool.query(
+      `
+      UPDATE marcas
+      SET marca = ?, ativo = ?
+      WHERE id_marca = ?
+      `,
+      [
+        String(marca).trim().toUpperCase(),
+        ativo === false ? 0 : 1,
+        req.params.codigo
+      ]
+    );
+
+    res.json({
+      mensagem: 'Marca atualizada com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
+
+app.delete('/api/marcas/:codigo', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM marcas WHERE id_marca = ?',
+      [req.params.codigo]
+    );
+
+    res.json({
+      mensagem: 'Marca excluída com sucesso.'
+    });
+  } catch (erro) {
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
 
 /* =========================
    PRODUTOS
@@ -480,116 +969,154 @@ app.get('/api/produtos', async (_req, res) => {
     const [linhas] = await pool.query(`
       SELECT
         p.id_produto AS codigo,
-        p.produto AS nome,
+        p.produto,
+        p.marca,
         p.preco,
+        p.custo,
         p.estoque,
         p.unidade,
+        c.nome AS categoria,
         p.ativo,
-        c.nome AS categoria
+        p.data_cadastro AS dataCadastro,
+        p.data_ultima_alteracao AS dataAlteracao
       FROM produtos p
       LEFT JOIN categorias c ON c.id_categoria = p.id_categoria
       ORDER BY p.id_produto
     `);
 
-    res.json(linhas.map(p => ({
-      ...p,
-      preco: Number(p.preco),
-      estoque: Number(p.estoque),
-      ativo: Boolean(p.ativo)
+    res.json(linhas.map(item => ({
+      ...item,
+      ativo: item.ativo === undefined ? true : Boolean(item.ativo)
     })));
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
 app.post('/api/produtos', async (req, res) => {
-  const { nome, preco, estoque, unidade, categoria } = req.body;
+  const {
+    produto,
+    preco,
+    estoque,
+    unidade,
+    categoria,
+    marca,
+    custo
+  } = req.body;
 
-  if (!nome || toMoney(preco) <= 0 || Number(estoque) < 0) {
+  if (!produto) {
     return res.status(400).json({
-      erro: 'Preencha produto, preço e estoque corretamente.'
+      erro: 'Informe o produto.'
     });
   }
 
-  let conexao;
-
   try {
-    conexao = await pool.getConnection();
-    await conexao.beginTransaction();
+    let idCategoria = null;
 
-    const idCategoria = await obterOuCriarCategoria(conexao, categoria);
-    const unidadeNormalizada = normalizarUnidade(unidade);
+    if (categoria) {
+      const [categorias] = await pool.query(
+        'SELECT id_categoria FROM categorias WHERE nome = ? LIMIT 1',
+        [String(categoria).trim().toUpperCase()]
+      );
 
-    const [resultado] = await conexao.query(
+      if (categorias.length > 0) {
+        idCategoria = categorias[0].id_categoria;
+      }
+    }
+
+    const [resultado] = await pool.query(
       `
       INSERT INTO produtos (
-        produto, preco, estoque, unidade, id_categoria, ativo
-      ) VALUES (?, ?, ?, ?, ?, 1)
+        produto,
+        marca,
+        preco,
+        custo,
+        estoque,
+        unidade,
+        id_categoria,
+        ativo
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
       `,
       [
-        nome,
-        toMoney(preco),
+        String(produto).trim().toUpperCase(),
+        String(marca || '').trim().toUpperCase(),
+        Number(preco) || 0,
+        Number(custo) || 0,
         Number(estoque) || 0,
-        unidadeNormalizada,
+        String(unidade || 'UN').trim().toUpperCase(),
         idCategoria
       ]
     );
 
-    await conexao.commit();
-
     res.status(201).json({
-      codigo: resultado.insertId,
-      nome,
-      preco,
-      estoque,
-      unidade: unidadeNormalizada,
-      categoria
+      codigo: resultado.insertId
     });
   } catch (erro) {
-    if (conexao) {
-      await conexao.rollback();
-    }
-
-    res.status(500).json({ erro: erro.message });
-  } finally {
-    if (conexao) {
-      conexao.release();
-    }
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
 app.put('/api/produtos/:codigo', async (req, res) => {
-  const { nome, preco, estoque, unidade, categoria } = req.body;
-  let conexao;
+  const {
+    produto,
+    preco,
+    unidade,
+    categoria,
+    marca
+  } = req.body;
+
+  if (!produto) {
+    return res.status(400).json({
+      erro: 'Informe o produto.'
+    });
+  }
 
   try {
-    conexao = await pool.getConnection();
-    await conexao.beginTransaction();
+    let idCategoria = null;
 
-    const idCategoria = await obterOuCriarCategoria(conexao, categoria);
-    const unidadeNormalizada = normalizarUnidade(unidade);
+    if (categoria) {
+      const [categorias] = await pool.query(
+        'SELECT id_categoria FROM categorias WHERE nome = ? LIMIT 1',
+        [String(categoria).trim().toUpperCase()]
+      );
 
-    await conexao.query(
+      if (categorias.length > 0) {
+        idCategoria = categorias[0].id_categoria;
+      }
+    }
+
+    await pool.query(
       `
       UPDATE produtos
-      SET produto = ?, preco = ?, estoque = ?, unidade = ?, id_categoria = ?
+      SET
+        produto = ?,
+        marca = ?,
+        preco = ?,
+        unidade = ?,
+        id_categoria = ?
       WHERE id_produto = ?
       `,
-      [nome, toMoney(preco), Number(estoque) || 0, unidadeNormalizada, idCategoria, req.params.codigo]
+      [
+        String(produto).trim().toUpperCase(),
+        String(marca || '').trim().toUpperCase(),
+        Number(preco) || 0,
+        String(unidade || 'UN').trim().toUpperCase(),
+        idCategoria,
+        req.params.codigo
+      ]
     );
 
-    await conexao.commit();
-    res.json({ mensagem: 'Produto atualizado com sucesso.' });
+    res.json({
+      mensagem: 'Produto atualizado com sucesso.'
+    });
   } catch (erro) {
-    if (conexao) {
-      await conexao.rollback();
-    }
-
-    res.status(500).json({ erro: erro.message });
-  } finally {
-    if (conexao) {
-      conexao.release();
-    }
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
@@ -618,7 +1145,6 @@ app.get('/api/clientes', async (_req, res) => {
         cl.rg,
         cl.email,
         cl.celular,
-        cl.telefone,
         cl.endereco,
         cl.numero,
         cl.complemento,
@@ -658,17 +1184,33 @@ app.post('/api/clientes', async (req, res) => {
   const c = req.body;
 
   if (!c.nome) {
-    return res.status(400).json({ erro: 'Informe o nome do cliente.' });
+    return res.status(400).json({
+      erro: 'Informe o nome do cliente.'
+    });
   }
 
   try {
     const [resultado] = await pool.query(
       `
       INSERT INTO clientes (
-        cliente, apelido, data_nascimento, cpf_cnpj, rg, email,
-        celular, telefone, endereco, numero, complemento, bairro,
-        id_cidade, cep, ativo, genero, id_condicao_pagamento, limite_credito
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        cliente,
+        apelido,
+        data_nascimento,
+        cpf_cnpj,
+        rg,
+        email,
+        celular,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        id_cidade,
+        cep,
+        ativo,
+        genero,
+        id_condicao_pagamento,
+        limite_credito
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         c.nome,
@@ -678,7 +1220,6 @@ app.post('/api/clientes', async (req, res) => {
         c.rg || '',
         c.email || '',
         c.celular || '',
-        c.telefone || '',
         c.endereco || '',
         c.numero || '',
         c.complemento || '',
@@ -697,7 +1238,9 @@ app.post('/api/clientes', async (req, res) => {
       ...c
     });
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
@@ -709,7 +1252,7 @@ app.put('/api/clientes/:codigo', async (req, res) => {
       `
       UPDATE clientes
       SET cliente = ?, apelido = ?, data_nascimento = ?, cpf_cnpj = ?, rg = ?,
-          email = ?, celular = ?, telefone = ?, endereco = ?, numero = ?,
+          email = ?, celular = ?, endereco = ?, numero = ?,
           complemento = ?, bairro = ?, id_cidade = ?, cep = ?, ativo = ?,
           genero = ?, id_condicao_pagamento = ?, limite_credito = ?
       WHERE id_cliente = ?
@@ -722,7 +1265,6 @@ app.put('/api/clientes/:codigo', async (req, res) => {
         c.rg || '',
         c.email || '',
         c.celular || '',
-        c.telefone || '',
         c.endereco || '',
         c.numero || '',
         c.complemento || '',
@@ -768,7 +1310,6 @@ app.get('/api/fornecedores', async (_req, res) => {
         f.rg,
         f.email,
         f.celular,
-        f.telefone,
         f.endereco,
         f.numero,
         f.complemento,
@@ -808,17 +1349,33 @@ app.post('/api/fornecedores', async (req, res) => {
   const f = req.body;
 
   if (!f.nome) {
-    return res.status(400).json({ erro: 'Informe o nome do fornecedor.' });
+    return res.status(400).json({
+      erro: 'Informe o nome do fornecedor.'
+    });
   }
 
   try {
     const [resultado] = await pool.query(
       `
       INSERT INTO fornecedores (
-        fornecedor, apelido, data_nascimento, cpf_cnpj, rg, email,
-        celular, telefone, endereco, numero, complemento, bairro,
-        id_cidade, cep, ativo, genero, id_condicao_pagamento, limite_credito
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        fornecedor,
+        apelido,
+        data_nascimento,
+        cpf_cnpj,
+        rg,
+        email,
+        celular,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        id_cidade,
+        cep,
+        ativo,
+        genero,
+        id_condicao_pagamento,
+        limite_credito
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         f.nome,
@@ -828,7 +1385,6 @@ app.post('/api/fornecedores', async (req, res) => {
         f.rg || '',
         f.email || '',
         f.celular || '',
-        f.telefone || '',
         f.endereco || '',
         f.numero || '',
         f.complemento || '',
@@ -847,7 +1403,9 @@ app.post('/api/fornecedores', async (req, res) => {
       ...f
     });
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
@@ -859,7 +1417,7 @@ app.put('/api/fornecedores/:codigo', async (req, res) => {
       `
       UPDATE fornecedores
       SET fornecedor = ?, apelido = ?, data_nascimento = ?, cpf_cnpj = ?, rg = ?,
-          email = ?, celular = ?, telefone = ?, endereco = ?, numero = ?,
+          email = ?, celular = ?, endereco = ?, numero = ?,
           complemento = ?, bairro = ?, id_cidade = ?, cep = ?, ativo = ?,
           genero = ?, id_condicao_pagamento = ?, limite_credito = ?
       WHERE id_fornecedor = ?
@@ -872,7 +1430,6 @@ app.put('/api/fornecedores/:codigo', async (req, res) => {
         f.rg || '',
         f.email || '',
         f.celular || '',
-        f.telefone || '',
         f.endereco || '',
         f.numero || '',
         f.complemento || '',
@@ -920,7 +1477,6 @@ app.get('/api/funcionarios', async (_req, res) => {
         f.carteira_trabalho AS carteiraTrabalho,
         f.email,
         f.celular,
-        f.telefone,
         f.endereco,
         f.numero,
         f.complemento,
@@ -960,17 +1516,35 @@ app.post('/api/funcionarios', async (req, res) => {
   const f = req.body;
 
   if (!f.funcionario) {
-    return res.status(400).json({ erro: 'Informe o nome do funcionário.' });
+    return res.status(400).json({
+      erro: 'Informe o nome do funcionário.'
+    });
   }
 
   try {
     const [resultado] = await pool.query(
       `
       INSERT INTO funcionarios (
-        funcionario, apelido, data_nascimento, cpf, rg, cnh, carteira_trabalho,
-        email, celular, telefone, endereco, numero, complemento, bairro,
-        id_cidade, cep, id_cargo, salario, ativo, genero
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        funcionario,
+        apelido,
+        data_nascimento,
+        cpf,
+        rg,
+        cnh,
+        carteira_trabalho,
+        email,
+        celular,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        id_cidade,
+        cep,
+        id_cargo,
+        salario,
+        ativo,
+        genero
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         f.funcionario,
@@ -982,7 +1556,6 @@ app.post('/api/funcionarios', async (req, res) => {
         f.carteiraTrabalho || '',
         f.email || '',
         f.celular || '',
-        f.telefone || '',
         f.endereco || '',
         f.numero || '',
         f.complemento || '',
@@ -1001,7 +1574,9 @@ app.post('/api/funcionarios', async (req, res) => {
       ...f
     });
   } catch (erro) {
-    res.status(500).json({ erro: erro.message });
+    res.status(500).json({
+      erro: erro.message
+    });
   }
 });
 
@@ -1013,7 +1588,7 @@ app.put('/api/funcionarios/:codigo', async (req, res) => {
       `
       UPDATE funcionarios
       SET funcionario = ?, apelido = ?, data_nascimento = ?, cpf = ?, rg = ?, cnh = ?,
-          carteira_trabalho = ?, email = ?, celular = ?, telefone = ?, endereco = ?,
+          carteira_trabalho = ?, email = ?, celular = ?, endereco = ?,
           numero = ?, complemento = ?, bairro = ?, id_cidade = ?, cep = ?,
           id_cargo = ?, salario = ?, ativo = ?, genero = ?
       WHERE id_funcionario = ?
@@ -1028,7 +1603,6 @@ app.put('/api/funcionarios/:codigo', async (req, res) => {
         f.carteiraTrabalho || '',
         f.email || '',
         f.celular || '',
-        f.telefone || '',
         f.endereco || '',
         f.numero || '',
         f.complemento || '',

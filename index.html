@@ -27,7 +27,9 @@
 
         <p id="loginMensagem" class="login-mensagem"></p>
 
-        <p class="login-ajuda">Usuários: Admin, Gerente, Vendedor ou Estoquista | Senha: 1234</p>
+        <p class="login-ajuda">
+          Usuários: Admin, Gerente, Vendedor ou Estoquista | Senha: 1234
+        </p>
       </form>
     </div>
   </section>
@@ -49,17 +51,19 @@
           <button class="menu-btn" data-tela="cidades">Cidades</button>
           <button class="menu-btn" data-tela="cargos">Cargos</button>
           <button class="menu-btn" data-tela="categorias">Categorias</button>
+          <button class="menu-btn" data-tela="formasPagamento">Formas Pgto</button>
+          <button class="menu-btn" data-tela="marcas">Marcas</button>
           <button class="menu-btn" data-tela="condicoes">Condições</button>
           <button class="menu-btn" data-tela="historico">Histórico</button>
         </nav>
       </div>
 
       <div class="cabecalho-direita">
-        <button id="btnTema" class="btn-tema">
+        <button id="btnTema" class="btn-tema" type="button">
           🌙 Tema
         </button>
 
-        <button id="btnSair" class="btn btn-vermelho btn-sair-menu">
+        <button id="btnSair" class="btn btn-vermelho btn-sair-menu" type="button">
           🚪 Sair
         </button>
 
@@ -207,7 +211,9 @@
                   <input id="quantidadeInput" type="number" min="1" inputmode="numeric" />
                 </div>
 
-                <button id="btnAdicionar" class="btn btn-verde">Adicionar</button>
+                <button id="btnAdicionar" class="btn btn-verde" type="button">
+                  Adicionar
+                </button>
               </div>
             </div>
 
@@ -236,7 +242,9 @@
               </table>
             </div>
 
-            <button id="btnRemover" class="btn btn-vermelho">Remover Item</button>
+            <button id="btnRemover" class="btn btn-vermelho" type="button">
+              Remover Item
+            </button>
           </section>
 
           <section class="card resumo-card">
@@ -251,10 +259,25 @@
             <label>Total a pagar:</label>
             <div id="totalValor" class="total">R$ 0,00</div>
 
-            <label for="formaPagamentoSelect">Forma de pagamento:</label>
-            <select id="formaPagamentoSelect">
-              <option value="">Selecionar</option>
-            </select>
+            <label for="formaPagamentoNomeVenda">Forma Pgto:</label>
+
+            <input type="hidden" id="formaPagamentoSelect" />
+
+            <div class="campo-com-botao">
+              <input
+                id="formaPagamentoNomeVenda"
+                readonly
+                placeholder="Selecionar"
+              />
+
+              <button
+                class="btn btn-azul"
+                type="button"
+                id="btnConsultarFormaPagamentoVenda"
+              >
+                🔎
+              </button>
+            </div>
 
             <label for="condicaoPagamentoVendaSelect">Condição de pagamento:</label>
             <select id="condicaoPagamentoVendaSelect">
@@ -267,9 +290,13 @@
             <label>Troco:</label>
             <div id="trocoValor" class="troco">R$ 0,00</div>
 
-            <button id="btnFinalizar" class="btn btn-verde btn-grande">Finalizar Venda</button>
-            <button id="btnLimpar" class="btn btn-azul btn-grande">Nova Venda / Limpar</button>
-            <button id="btnSair" class="btn btn-vermelho btn-grande">Sair</button>
+            <button id="btnFinalizar" class="btn btn-verde btn-grande" type="button">
+              Finalizar Venda
+            </button>
+
+            <button id="btnLimpar" class="btn btn-azul btn-grande" type="button">
+              Nova Venda / Limpar
+            </button>
           </section>
         </div>
       </section>
@@ -279,171 +306,16 @@
       <!-- ========================= -->
       <section id="telaClientes" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Cadastro de Clientes</h2>
+          <section class="card cadastro-consulta-card" id="consultaClientes">
+            <div class="cadastro-topo">
+              <h2>Consulta de Clientes</h2>
 
-            <form id="formCliente" class="form-grid">
-              <input type="hidden" id="clienteCodigoCadastro" />
-
-              <div>
-                <label for="clienteNomeCadastro">Cliente:</label>
-                <input id="clienteNomeCadastro" required />
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoCliente">
+                  Novo Cliente
+                </button>
               </div>
-
-              <div>
-                <label for="clienteApelidoCadastro">Apelido:</label>
-                <input id="clienteApelidoCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteDataNascimentoCadastro">Data de nascimento:</label>
-                <input id="clienteDataNascimentoCadastro" type="date" />
-              </div>
-
-              <div>
-                <label for="clienteCpfCadastro">CPF/CNPJ:</label>
-                <input id="clienteCpfCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteRgCadastro">RG:</label>
-                <input id="clienteRgCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteEmailCadastro">E-mail:</label>
-                <input id="clienteEmailCadastro" type="email" />
-              </div>
-
-              <div>
-                <label for="clienteCelularCadastro">Celular:</label>
-                <input id="clienteCelularCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteTelefoneCadastro">Telefone:</label>
-                <input id="clienteTelefoneCadastro" />
-              </div>
-
-              <div class="campo-largo">
-                <label for="clienteEnderecoCadastro">Endereço:</label>
-                <input id="clienteEnderecoCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteNumeroCadastro">Número:</label>
-                <input id="clienteNumeroCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteComplementoCadastro">Complemento:</label>
-                <input id="clienteComplementoCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteBairroCadastro">Bairro:</label>
-                <input id="clienteBairroCadastro" />
-              </div>
-
-              <div>
-                <label for="clientePaisCadastro">País:</label>
-                <select id="clientePaisCadastro">
-                  <option value="1">Brasil</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="clienteEstadoCadastro">Estado:</label>
-                <select id="clienteEstadoCadastro">
-                  <option value="">Selecione</option>
-                  <option value="AC">AC - Acre</option>
-                  <option value="AL">AL - Alagoas</option>
-                  <option value="AP">AP - Amapá</option>
-                  <option value="AM">AM - Amazonas</option>
-                  <option value="BA">BA - Bahia</option>
-                  <option value="CE">CE - Ceará</option>
-                  <option value="DF">DF - Distrito Federal</option>
-                  <option value="ES">ES - Espírito Santo</option>
-                  <option value="GO">GO - Goiás</option>
-                  <option value="MA">MA - Maranhão</option>
-                  <option value="MT">MT - Mato Grosso</option>
-                  <option value="MS">MS - Mato Grosso do Sul</option>
-                  <option value="MG">MG - Minas Gerais</option>
-                  <option value="PA">PA - Pará</option>
-                  <option value="PB">PB - Paraíba</option>
-                  <option value="PR">PR - Paraná</option>
-                  <option value="PE">PE - Pernambuco</option>
-                  <option value="PI">PI - Piauí</option>
-                  <option value="RJ">RJ - Rio de Janeiro</option>
-                  <option value="RN">RN - Rio Grande do Norte</option>
-                  <option value="RS">RS - Rio Grande do Sul</option>
-                  <option value="RO">RO - Rondônia</option>
-                  <option value="RR">RR - Roraima</option>
-                  <option value="SC">SC - Santa Catarina</option>
-                  <option value="SP">SP - São Paulo</option>
-                  <option value="SE">SE - Sergipe</option>
-                  <option value="TO">TO - Tocantins</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="clienteCidadeCadastro">Cidade:</label>
-                <select id="clienteCidadeCadastro">
-                  <option value="">Selecione</option>
-                  <option value="1">São Paulo</option>
-                  <option value="2">Rio de Janeiro</option>
-                  <option value="3">Belo Horizonte</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="clienteCepCadastro">CEP:</label>
-                <input id="clienteCepCadastro" />
-              </div>
-
-              <div>
-                <label for="clienteAtivoCadastro">Ativo:</label>
-                <select id="clienteAtivoCadastro">
-                  <option value="true">Ativo</option>
-                  <option value="false">Inativo</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="clienteGeneroCadastro">Gênero:</label>
-                <select id="clienteGeneroCadastro">
-                  <option value="">Selecione</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Outro">Outro</option>
-                  <option value="Não informado">Não informado</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="clienteFormaPagamentoCadastro">Condição de pagamento padrão:</label>
-                <select id="clienteFormaPagamentoCadastro">
-                  <option value="">Selecione</option>
-                  <option value="Dinheiro">Dinheiro</option>
-                  <option value="Pix">Pix</option>
-                  <option value="Cartão de Débito">Cartão de Débito</option>
-                  <option value="Cartão de Crédito">Cartão de Crédito</option>
-                  <option value="Boleto">Boleto</option>
-                  <option value="Crediário">Crediário</option>
-                  <option value="Transferência Bancária">Transferência Bancária</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="clienteLimiteCreditoCadastro">Limite crédito:</label>
-                <input id="clienteLimiteCreditoCadastro" inputmode="decimal" placeholder="Ex.: 1500,00" />
-              </div>
-
-              <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">Salvar Cliente</button>
-                <button class="btn btn-azul" type="button" id="btnNovoCliente">Novo</button>
-              </div>
-            </form>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -466,6 +338,139 @@
               </table>
             </div>
           </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardCliente">
+            <h2>Cadastro de Clientes</h2>
+
+            <form id="formCliente" class="form-grid">
+              <input type="hidden" id="clienteCodigoCadastro" />
+
+              <div>
+                <label for="clienteTipoCadastro">Tipo:</label>
+                <select id="clienteTipoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Pessoa Física">Pessoa Física</option>
+                  <option value="Pessoa Jurídica">Pessoa Jurídica</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteNomeCadastro">Cliente:</label>
+                <input id="clienteNomeCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteApelidoCadastro">Apelido:</label>
+                <input id="clienteApelidoCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteGeneroCadastro">Gênero:</label>
+                <select id="clienteGeneroCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Outro">Outro</option>
+                  <option value="Não informado">Não informado</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteDataNascimentoCadastro">Data de nascimento:</label>
+                <input id="clienteDataNascimentoCadastro" type="date" />
+              </div>
+
+              <div class="form-separador">Endereços</div>
+
+              <div>
+                <label for="clienteEnderecoCadastro">Endereço:</label>
+                <input id="clienteEnderecoCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteNumeroCadastro">Número:</label>
+                <input id="clienteNumeroCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteBairroCadastro">Bairro:</label>
+                <input id="clienteBairroCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteCepCadastro">CEP:</label>
+                <input id="clienteCepCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteComplementoCadastro">Complemento:</label>
+                <input id="clienteComplementoCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteCidadeNomeCadastro">Cidade:</label>
+
+                <input type="hidden" id="clienteCidadeCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="clienteCidadeNomeCadastro" readonly placeholder="Selecionar cidade" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarCidadeCliente">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="clienteUfCadastro">UF:</label>
+                <input id="clienteUfCadastro" readonly />
+              </div>
+
+              <div>
+                <label for="clienteCelularCadastro">Celular:</label>
+                <input id="clienteCelularCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteEmailCadastro">E-mail:</label>
+                <input id="clienteEmailCadastro" type="email" />
+              </div>
+
+              <div class="form-separador">Documentos</div>
+
+              <div>
+                <label for="clienteCpfCadastro">CPF/CNPJ:</label>
+                <input id="clienteCpfCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteRgCadastro">RG:</label>
+                <input id="clienteRgCadastro" />
+              </div>
+
+              <div>
+                <label for="clienteFormaPagamentoCadastro">Condição de pagamento padrão:</label>
+                <select id="clienteFormaPagamentoCadastro">
+                  <option value="">Selecionar</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="clienteLimiteCreditoCadastro">Limite crédito:</label>
+                <input id="clienteLimiteCreditoCadastro" inputmode="decimal" placeholder="Ex.: 1500,00" />
+              </div>
+
+              <div>
+                <label for="clienteAtivoCadastro">Ativo:</label>
+                <select id="clienteAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Cliente</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarCliente">Cancelar</button>
+              </div>
+            </form>
+          </section>
         </div>
       </section>
 
@@ -474,56 +479,16 @@
       <!-- ========================= -->
       <section id="telaProdutos" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Cadastro de Produtos</h2>
+          <section class="card cadastro-consulta-card" id="consultaProdutos">
+            <div class="cadastro-topo">
+              <h2>Consulta de Produtos</h2>
 
-            <form id="formProduto" class="form-grid">
-              <input type="hidden" id="produtoCodigoCadastro" />
-
-              <div>
-                <label for="produtoNomeCadastro">Produto:</label>
-                <input id="produtoNomeCadastro" required />
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoProduto">
+                  Novo Produto
+                </button>
               </div>
-
-              <div>
-                <label for="produtoPrecoCadastro">Preço:</label>
-                <input id="produtoPrecoCadastro" inputmode="decimal" required />
-              </div>
-
-              <div>
-                <label for="produtoEstoqueCadastro">Estoque:</label>
-                <input id="produtoEstoqueCadastro" type="number" min="0" required />
-              </div>
-
-              <div>
-                <label for="produtoUnidadeCadastro">Unidade:</label>
-                <select id="produtoUnidadeCadastro">
-                  <option value="UN">UN - Unidade</option>
-                  <option value="CX">CX - Caixa</option>
-                  <option value="KG">KG - Quilograma</option>
-                  <option value="G">G - Grama</option>
-                  <option value="L">L - Litro</option>
-                  <option value="ML">ML - Mililitro</option>
-                  <option value="M">M - Metro</option>
-                  <option value="CM">CM - Centímetro</option>
-                  <option value="PCT">PCT - Pacote</option>
-                  <option value="PAR">PAR - Par</option>
-                  <option value="DZ">DZ - Dúzia</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="produtoCategoriaCadastro">Categoria:</label>
-                <select id="produtoCategoriaCadastro">
-                  <option value="">Selecione</option>
-                </select>
-              </div>
-
-              <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">Salvar Produto</button>
-                <button class="btn btn-azul" type="button" id="btnNovoProduto">Novo</button>
-              </div>
-            </form>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -531,10 +496,14 @@
                   <tr>
                     <th>Cód.</th>
                     <th>Produto</th>
+                    <th>Marca</th>
                     <th>Preço</th>
+                    <th>Custo</th>
                     <th>Estoque</th>
                     <th>Unidade</th>
                     <th>Categoria</th>
+                    <th>Data Cadastro</th>
+                    <th>Última Alteração</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
@@ -543,7 +512,73 @@
             </div>
           </section>
 
-          <section class="card cadastro-card">
+          <section class="card cadastro-form-card oculto" id="formCardProduto">
+            <h2>Cadastro de Produtos</h2>
+
+            <form id="formProduto" class="form-grid">
+              <input type="hidden" id="produtoCodigoCadastro" />
+
+              <div>
+                <label for="produtoNomeCadastro">Produto:</label>
+                <input id="produtoNomeCadastro" />
+              </div>
+
+              <div>
+                <label for="produtoMarcaNomeCadastro">Marca:</label>
+
+                <input type="hidden" id="produtoMarcaCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="produtoMarcaNomeCadastro" readonly placeholder="Selecionar marca" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarMarcaProduto">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="produtoUnidadeNomeCadastro">Unidade:</label>
+
+                <input type="hidden" id="produtoUnidadeCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="produtoUnidadeNomeCadastro" readonly placeholder="Selecionar unidade" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarUnidadeProduto">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="produtoCategoriaNomeCadastro">Categoria:</label>
+
+                <input type="hidden" id="produtoCategoriaCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="produtoCategoriaNomeCadastro" readonly placeholder="Selecionar categoria" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarCategoriaProduto">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="produtoPrecoCadastro">Preço Venda:</label>
+                <input id="produtoPrecoCadastro" inputmode="decimal" />
+              </div>
+
+              <div>
+                <label for="produtoCustoCadastro">Custo:</label>
+                <input id="produtoCustoCadastro" readonly placeholder="Atualizado por entrada" />
+              </div>
+
+              <div>
+                <label for="produtoEstoqueCadastro">Estoque:</label>
+                <input id="produtoEstoqueCadastro" readonly placeholder="Atualizado por entrada" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Produto</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarProduto">Cancelar</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card cadastro-consulta-card">
             <h2>Produtos sem estoque</h2>
 
             <p id="mensagemSemEstoque" class="mensagem-estoque">
@@ -575,171 +610,16 @@
       <!-- ========================= -->
       <section id="telaFornecedores" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Cadastro de Fornecedores</h2>
+          <section class="card cadastro-consulta-card" id="consultaFornecedores">
+            <div class="cadastro-topo">
+              <h2>Consulta de Fornecedores</h2>
 
-            <form id="formFornecedor" class="form-grid">
-              <input type="hidden" id="fornecedorCodigoCadastro" />
-
-              <div>
-                <label for="fornecedorNomeCadastro">Fornecedor:</label>
-                <input id="fornecedorNomeCadastro" required />
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoFornecedor">
+                  Novo Fornecedor
+                </button>
               </div>
-
-              <div>
-                <label for="fornecedorApelidoCadastro">Apelido:</label>
-                <input id="fornecedorApelidoCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorDataNascimentoCadastro">Data de nascimento:</label>
-                <input id="fornecedorDataNascimentoCadastro" type="date" />
-              </div>
-
-              <div>
-                <label for="fornecedorCpfCnpjCadastro">CPF/CNPJ:</label>
-                <input id="fornecedorCpfCnpjCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorRgCadastro">RG:</label>
-                <input id="fornecedorRgCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorEmailCadastro">E-mail:</label>
-                <input id="fornecedorEmailCadastro" type="email" />
-              </div>
-
-              <div>
-                <label for="fornecedorCelularCadastro">Celular:</label>
-                <input id="fornecedorCelularCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorTelefoneCadastro">Telefone:</label>
-                <input id="fornecedorTelefoneCadastro" />
-              </div>
-
-              <div class="campo-largo">
-                <label for="fornecedorEnderecoCadastro">Endereço:</label>
-                <input id="fornecedorEnderecoCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorNumeroCadastro">Número:</label>
-                <input id="fornecedorNumeroCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorComplementoCadastro">Complemento:</label>
-                <input id="fornecedorComplementoCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorBairroCadastro">Bairro:</label>
-                <input id="fornecedorBairroCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorPaisCadastro">País:</label>
-                <select id="fornecedorPaisCadastro">
-                  <option value="1">Brasil</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fornecedorEstadoCadastro">Estado:</label>
-                <select id="fornecedorEstadoCadastro">
-                  <option value="">Selecione</option>
-                  <option value="AC">AC - Acre</option>
-                  <option value="AL">AL - Alagoas</option>
-                  <option value="AP">AP - Amapá</option>
-                  <option value="AM">AM - Amazonas</option>
-                  <option value="BA">BA - Bahia</option>
-                  <option value="CE">CE - Ceará</option>
-                  <option value="DF">DF - Distrito Federal</option>
-                  <option value="ES">ES - Espírito Santo</option>
-                  <option value="GO">GO - Goiás</option>
-                  <option value="MA">MA - Maranhão</option>
-                  <option value="MT">MT - Mato Grosso</option>
-                  <option value="MS">MS - Mato Grosso do Sul</option>
-                  <option value="MG">MG - Minas Gerais</option>
-                  <option value="PA">PA - Pará</option>
-                  <option value="PB">PB - Paraíba</option>
-                  <option value="PR">PR - Paraná</option>
-                  <option value="PE">PE - Pernambuco</option>
-                  <option value="PI">PI - Piauí</option>
-                  <option value="RJ">RJ - Rio de Janeiro</option>
-                  <option value="RN">RN - Rio Grande do Norte</option>
-                  <option value="RS">RS - Rio Grande do Sul</option>
-                  <option value="RO">RO - Rondônia</option>
-                  <option value="RR">RR - Roraima</option>
-                  <option value="SC">SC - Santa Catarina</option>
-                  <option value="SP">SP - São Paulo</option>
-                  <option value="SE">SE - Sergipe</option>
-                  <option value="TO">TO - Tocantins</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fornecedorCidadeCadastro">Cidade:</label>
-                <select id="fornecedorCidadeCadastro">
-                  <option value="">Selecione</option>
-                  <option value="1">São Paulo</option>
-                  <option value="2">Rio de Janeiro</option>
-                  <option value="3">Belo Horizonte</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fornecedorCepCadastro">CEP:</label>
-                <input id="fornecedorCepCadastro" />
-              </div>
-
-              <div>
-                <label for="fornecedorAtivoCadastro">Ativo:</label>
-                <select id="fornecedorAtivoCadastro">
-                  <option value="true">Ativo</option>
-                  <option value="false">Inativo</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fornecedorGeneroCadastro">Gênero:</label>
-                <select id="fornecedorGeneroCadastro">
-                  <option value="">Selecione</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Outro">Outro</option>
-                  <option value="Não informado">Não informado</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fornecedorFormaPagamentoCadastro">Condição de pagamento padrão:</label>
-                <select id="fornecedorFormaPagamentoCadastro">
-                  <option value="">Selecione</option>
-                  <option value="Dinheiro">Dinheiro</option>
-                  <option value="Pix">Pix</option>
-                  <option value="Cartão de Débito">Cartão de Débito</option>
-                  <option value="Cartão de Crédito">Cartão de Crédito</option>
-                  <option value="Boleto">Boleto</option>
-                  <option value="Crediário">Crediário</option>
-                  <option value="Transferência Bancária">Transferência Bancária</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fornecedorLimiteCreditoCadastro">Limite crédito:</label>
-                <input id="fornecedorLimiteCreditoCadastro" inputmode="decimal" placeholder="Ex.: 1500,00" />
-              </div>
-
-              <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">Salvar Fornecedor</button>
-                <button class="btn btn-azul" type="button" id="btnNovoFornecedor">Novo</button>
-              </div>
-            </form>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -762,147 +642,35 @@
               </table>
             </div>
           </section>
-        </div>
-      </section>
 
-      <!-- ========================= -->
-      <!-- FUNCIONÁRIOS -->
-      <!-- ========================= -->
-      <section id="telaFuncionarios" class="tela">
-        <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Cadastro de Funcionários</h2>
+          <section class="card cadastro-form-card oculto" id="formCardFornecedor">
+            <h2>Cadastro de Fornecedores</h2>
 
-            <form id="formFuncionario" class="form-grid">
-              <input type="hidden" id="funcionarioCodigoCadastro" />
+            <form id="formFornecedor" class="form-grid">
+              <input type="hidden" id="fornecedorCodigoCadastro" />
 
               <div>
-                <label for="funcionarioNomeCadastro">Funcionário:</label>
-                <input id="funcionarioNomeCadastro" required />
-              </div>
-
-              <div>
-                <label for="funcionarioApelidoCadastro">Apelido:</label>
-                <input id="funcionarioApelidoCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioDataNascimentoCadastro">Data de nascimento:</label>
-                <input id="funcionarioDataNascimentoCadastro" type="date" />
-              </div>
-
-              <div>
-                <label for="funcionarioCpfCadastro">CPF:</label>
-                <input id="funcionarioCpfCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioRgCadastro">RG:</label>
-                <input id="funcionarioRgCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioCnhCadastro">CNH:</label>
-                <input id="funcionarioCnhCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioCarteiraTrabalhoCadastro">Carteira de Trabalho:</label>
-                <input id="funcionarioCarteiraTrabalhoCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioCargoCadastro">Cargo:</label>
-                <select id="funcionarioCargoCadastro">
+                <label for="fornecedorTipoCadastro">Tipo:</label>
+                <select id="fornecedorTipoCadastro">
                   <option value="">Selecione</option>
-                  <option value="1">Administrador</option>
-                  <option value="2">Gerente</option>
-                  <option value="3">Vendedor</option>
-                  <option value="4">Operador de Caixa</option>
-                  <option value="5">Estoquista</option>
+                  <option value="Pessoa Física">Pessoa Física</option>
+                  <option value="Pessoa Jurídica">Pessoa Jurídica</option>
                 </select>
               </div>
 
               <div>
-                <label for="funcionarioEmailCadastro">E-mail:</label>
-                <input id="funcionarioEmailCadastro" type="email" />
+                <label for="fornecedorNomeCadastro">Fornecedor:</label>
+                <input id="fornecedorNomeCadastro" />
               </div>
 
               <div>
-                <label for="funcionarioCelularCadastro">Celular:</label>
-                <input id="funcionarioCelularCadastro" />
+                <label for="fornecedorApelidoCadastro">Apelido:</label>
+                <input id="fornecedorApelidoCadastro" />
               </div>
 
               <div>
-                <label for="funcionarioTelefoneCadastro">Telefone:</label>
-                <input id="funcionarioTelefoneCadastro" />
-              </div>
-
-              <div class="campo-largo">
-                <label for="funcionarioEnderecoCadastro">Endereço:</label>
-                <input id="funcionarioEnderecoCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioNumeroCadastro">Número:</label>
-                <input id="funcionarioNumeroCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioComplementoCadastro">Complemento:</label>
-                <input id="funcionarioComplementoCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioBairroCadastro">Bairro:</label>
-                <input id="funcionarioBairroCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioPaisCadastro">País:</label>
-                <select id="funcionarioPaisCadastro">
-                  <option value="">Selecione</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="funcionarioEstadoCadastro">Estado:</label>
-                <select id="funcionarioEstadoCadastro">
-                  <option value="">Selecione</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="funcionarioCidadeCadastro">Cidade:</label>
-                <select id="funcionarioCidadeCadastro">
-                  <option value="">Selecione</option>
-                  <option value="1">São Paulo</option>
-                  <option value="2">Rio de Janeiro</option>
-                  <option value="3">Belo Horizonte</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="funcionarioCepCadastro">CEP:</label>
-                <input id="funcionarioCepCadastro" />
-              </div>
-
-              <div>
-                <label for="funcionarioSalarioCadastro">Salário:</label>
-                <input id="funcionarioSalarioCadastro" inputmode="decimal" placeholder="Ex.: 2500,00" />
-              </div>
-
-              <div>
-                <label for="funcionarioAtivoCadastro">Ativo:</label>
-                <select id="funcionarioAtivoCadastro">
-                  <option value="true">Ativo</option>
-                  <option value="false">Inativo</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="funcionarioGeneroCadastro">Gênero:</label>
-                <select id="funcionarioGeneroCadastro">
+                <label for="fornecedorGeneroCadastro">Gênero:</label>
+                <select id="fornecedorGeneroCadastro">
                   <option value="">Selecione</option>
                   <option value="Feminino">Feminino</option>
                   <option value="Masculino">Masculino</option>
@@ -911,11 +679,120 @@
                 </select>
               </div>
 
+              <div>
+                <label for="fornecedorDataNascimentoCadastro">Data de nascimento:</label>
+                <input id="fornecedorDataNascimentoCadastro" type="date" />
+              </div>
+
+              <div class="form-separador">Endereços</div>
+
+              <div>
+                <label for="fornecedorEnderecoCadastro">Endereço:</label>
+                <input id="fornecedorEnderecoCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorNumeroCadastro">Número:</label>
+                <input id="fornecedorNumeroCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorBairroCadastro">Bairro:</label>
+                <input id="fornecedorBairroCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorCepCadastro">CEP:</label>
+                <input id="fornecedorCepCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorComplementoCadastro">Complemento:</label>
+                <input id="fornecedorComplementoCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorCidadeNomeCadastro">Cidade:</label>
+
+                <input type="hidden" id="fornecedorCidadeCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="fornecedorCidadeNomeCadastro" readonly placeholder="Selecionar cidade" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarCidadeFornecedor">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="fornecedorUfCadastro">UF:</label>
+                <input id="fornecedorUfCadastro" readonly />
+              </div>
+
+              <div>
+                <label for="fornecedorCelularCadastro">Celular:</label>
+                <input id="fornecedorCelularCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorEmailCadastro">E-mail:</label>
+                <input id="fornecedorEmailCadastro" type="email" />
+              </div>
+
+              <div class="form-separador">Documentos</div>
+
+              <div>
+                <label for="fornecedorCpfCnpjCadastro">CPF/CNPJ:</label>
+                <input id="fornecedorCpfCnpjCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorRgCadastro">RG:</label>
+                <input id="fornecedorRgCadastro" />
+              </div>
+
+              <div>
+                <label for="fornecedorFormaPagamentoCadastro">Condição de pagamento padrão:</label>
+                <select id="fornecedorFormaPagamentoCadastro">
+                  <option value="">Selecionar</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fornecedorLimiteCreditoCadastro">Limite crédito:</label>
+                <input id="fornecedorLimiteCreditoCadastro" inputmode="decimal" placeholder="Ex.: 1500,00" />
+              </div>
+
+              <div>
+                <label for="fornecedorAtivoCadastro">Ativo:</label>
+                <select id="fornecedorAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
               <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">Salvar Funcionário</button>
-                <button class="btn btn-azul" type="button" id="btnNovoFuncionario">Novo</button>
+                <button class="btn btn-verde" type="submit">Salvar Fornecedor</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarFornecedor">Cancelar</button>
               </div>
             </form>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- FUNCIONÁRIOS -->
+      <!-- ========================= -->
+      <section id="telaFuncionarios" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-consulta-card" id="consultaFuncionarios">
+            <div class="cadastro-topo">
+              <h2>Consulta de Funcionários</h2>
+
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoFuncionario">
+                  Novo Funcionário
+                </button>
+              </div>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -935,6 +812,149 @@
               </table>
             </div>
           </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardFuncionario">
+            <h2>Cadastro de Funcionários</h2>
+
+            <form id="formFuncionario" class="form-grid">
+              <input type="hidden" id="funcionarioCodigoCadastro" />
+
+              <div>
+                <label for="funcionarioTipoCadastro">Tipo:</label>
+                <select id="funcionarioTipoCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Pessoa Física">Pessoa Física</option>
+                  <option value="Pessoa Jurídica">Pessoa Jurídica</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioNomeCadastro">Funcionário:</label>
+                <input id="funcionarioNomeCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioApelidoCadastro">Apelido:</label>
+                <input id="funcionarioApelidoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioGeneroCadastro">Gênero:</label>
+                <select id="funcionarioGeneroCadastro">
+                  <option value="">Selecione</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Outro">Outro</option>
+                  <option value="Não informado">Não informado</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioDataNascimentoCadastro">Data de nascimento:</label>
+                <input id="funcionarioDataNascimentoCadastro" type="date" />
+              </div>
+
+              <div class="form-separador">Endereços</div>
+
+              <div>
+                <label for="funcionarioEnderecoCadastro">Endereço:</label>
+                <input id="funcionarioEnderecoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioNumeroCadastro">Número:</label>
+                <input id="funcionarioNumeroCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioBairroCadastro">Bairro:</label>
+                <input id="funcionarioBairroCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCepCadastro">CEP:</label>
+                <input id="funcionarioCepCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioComplementoCadastro">Complemento:</label>
+                <input id="funcionarioComplementoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCidadeNomeCadastro">Cidade:</label>
+
+                <input type="hidden" id="funcionarioCidadeCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="funcionarioCidadeNomeCadastro" readonly placeholder="Selecionar cidade" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarCidadeFuncionario">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="funcionarioUfCadastro">UF:</label>
+                <input id="funcionarioUfCadastro" readonly />
+              </div>
+
+              <div>
+                <label for="funcionarioCelularCadastro">Celular:</label>
+                <input id="funcionarioCelularCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioEmailCadastro">E-mail:</label>
+                <input id="funcionarioEmailCadastro" type="email" />
+              </div>
+
+              <div class="form-separador">Documentos</div>
+
+              <div>
+                <label for="funcionarioCpfCadastro">CPF/CNPJ:</label>
+                <input id="funcionarioCpfCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioRgCadastro">RG:</label>
+                <input id="funcionarioRgCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCargoCadastro">Cargo:</label>
+                <select id="funcionarioCargoCadastro">
+                  <option value="">Selecionar</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="funcionarioCnhCadastro">CNH:</label>
+                <input id="funcionarioCnhCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioCarteiraTrabalhoCadastro">Carteira de Trabalho:</label>
+                <input id="funcionarioCarteiraTrabalhoCadastro" />
+              </div>
+
+              <div>
+                <label for="funcionarioSalarioCadastro">Salário:</label>
+                <input id="funcionarioSalarioCadastro" inputmode="decimal" placeholder="Ex.: 2500,00" />
+              </div>
+
+              <div>
+                <label for="funcionarioAtivoCadastro">Ativo:</label>
+                <select id="funcionarioAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Funcionário</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarFuncionario">Cancelar</button>
+              </div>
+            </form>
+          </section>
         </div>
       </section>
 
@@ -943,7 +963,33 @@
       <!-- ========================= -->
       <section id="telaPaises" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
+          <section class="card cadastro-consulta-card" id="consultaPaises">
+            <div class="cadastro-topo">
+              <h2>Consulta de Países</h2>
+
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoPais">
+                  Novo País
+                </button>
+              </div>
+            </div>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>País</th>
+                    <th>Sigla</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="paisesCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardPais">
             <h2>Cadastro de Países</h2>
 
             <form id="formPais" class="form-grid">
@@ -960,30 +1006,10 @@
               </div>
 
               <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">
-                  Salvar País
-                </button>
-
-                <button class="btn btn-azul" type="button" id="btnNovoPais">
-                  Novo
-                </button>
+                <button class="btn btn-verde" type="submit">Salvar País</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarPais">Cancelar</button>
               </div>
             </form>
-
-            <div class="tabela-wrapper tabela-cadastro">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Cód.</th>
-                    <th>País</th>
-                    <th>Sigla</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-
-                <tbody id="paisesCadastroTabela"></tbody>
-              </table>
-            </div>
           </section>
         </div>
       </section>
@@ -993,17 +1019,48 @@
       <!-- ========================= -->
       <section id="telaEstados" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
+          <section class="card cadastro-consulta-card" id="consultaEstados">
+            <div class="cadastro-topo">
+              <h2>Consulta de Estados</h2>
+
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoEstado">
+                  Novo Estado
+                </button>
+              </div>
+            </div>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>País</th>
+                    <th>Estado</th>
+                    <th>Sigla</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="estadosCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardEstado">
             <h2>Cadastro de Estados</h2>
 
             <form id="formEstado" class="form-grid">
               <input type="hidden" id="estadoCodigoCadastro" />
 
               <div>
-                <label for="estadoPaisCadastro">País:</label>
-                <select id="estadoPaisCadastro">
-                  <option value="1">Brasil</option>
-                </select>
+                <label for="estadoPaisNomeCadastro">País:</label>
+
+                <input type="hidden" id="estadoPaisCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="estadoPaisNomeCadastro" readonly placeholder="Selecionar país" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarPaisEstado">🔎</button>
+                </div>
               </div>
 
               <div>
@@ -1017,31 +1074,10 @@
               </div>
 
               <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">
-                  Salvar Estado
-                </button>
-
-                <button class="btn btn-azul" type="button" id="btnNovoEstado">
-                  Novo
-                </button>
+                <button class="btn btn-verde" type="submit">Salvar Estado</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarEstado">Cancelar</button>
               </div>
             </form>
-
-            <div class="tabela-wrapper tabela-cadastro">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Cód.</th>
-                    <th>País</th>
-                    <th>Estado</th>
-                    <th>Sigla</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-
-                <tbody id="estadosCadastroTabela"></tbody>
-              </table>
-            </div>
           </section>
         </div>
       </section>
@@ -1051,36 +1087,16 @@
       <!-- ========================= -->
       <section id="telaCidades" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Cadastro de Cidades</h2>
+          <section class="card cadastro-consulta-card" id="consultaCidades">
+            <div class="cadastro-topo">
+              <h2>Consulta de Cidades</h2>
 
-            <form id="formCidade" class="form-grid">
-              <input type="hidden" id="cidadeCodigoCadastro" />
-
-              <div>
-                <label for="cidadeEstadoCadastro">Estado:</label>
-                <select id="cidadeEstadoCadastro">
-                  <option value="25">SP - São Paulo</option>
-                  <option value="19">RJ - Rio de Janeiro</option>
-                  <option value="13">MG - Minas Gerais</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="cidadeNomeCadastro">Cidade:</label>
-                <input id="cidadeNomeCadastro" placeholder="Ex.: São Paulo" />
-              </div>
-
-              <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">
-                  Salvar Cidade
-                </button>
-
-                <button class="btn btn-azul" type="button" id="btnNovoCidade">
-                  Novo
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoCidade">
+                  Nova Cidade
                 </button>
               </div>
-            </form>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -1089,13 +1105,49 @@
                     <th>Cód.</th>
                     <th>Estado</th>
                     <th>Cidade</th>
+                    <th>DDD</th>
+                    <th>Data Cadastro</th>
+                    <th>Última Alteração</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
-
                 <tbody id="cidadesCadastroTabela"></tbody>
               </table>
             </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardCidade">
+            <h2>Cadastro de Cidades</h2>
+
+            <form id="formCidade" class="form-grid">
+              <input type="hidden" id="cidadeCodigoCadastro" />
+
+              <div>
+                <label for="cidadeEstadoNomeCadastro">Estado:</label>
+
+                <input type="hidden" id="cidadeEstadoCadastro" />
+
+                <div class="campo-com-botao">
+                  <input id="cidadeEstadoNomeCadastro" readonly placeholder="Selecionar estado" />
+                  <button class="btn btn-azul" type="button" id="btnConsultarEstadoCidade">🔎</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="cidadeNomeCadastro">Cidade:</label>
+                <input id="cidadeNomeCadastro" placeholder="Ex.: São Paulo" />
+              </div>
+
+              <div>
+                <label for="cidadeDddCadastro">DDD:</label>
+                <input id="cidadeDddCadastro" maxlength="5" placeholder="Ex.: 11" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Cidade</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarCidade">Cancelar</button>
+              </div>
+            </form>
           </section>
         </div>
       </section>
@@ -1105,7 +1157,32 @@
       <!-- ========================= -->
       <section id="telaCargos" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
+          <section class="card cadastro-consulta-card" id="consultaCargos">
+            <div class="cadastro-topo">
+              <h2>Consulta de Cargos</h2>
+
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoCargo">
+                  Novo Cargo
+                </button>
+              </div>
+            </div>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Cargo</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="cargosCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardCargo">
             <h2>Cadastro de Cargos</h2>
 
             <form id="formCargo" class="form-grid">
@@ -1117,29 +1194,10 @@
               </div>
 
               <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">
-                  Salvar Cargo
-                </button>
-
-                <button class="btn btn-azul" type="button" id="btnNovoCargo">
-                  Novo
-                </button>
+                <button class="btn btn-verde" type="submit">Salvar Cargo</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarCargo">Cancelar</button>
               </div>
             </form>
-
-            <div class="tabela-wrapper tabela-cadastro">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Cód.</th>
-                    <th>Cargo</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-
-                <tbody id="cargosCadastroTabela"></tbody>
-              </table>
-            </div>
           </section>
         </div>
       </section>
@@ -1149,27 +1207,16 @@
       <!-- ========================= -->
       <section id="telaCategorias" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Categorias de Produtos</h2>
+          <section class="card cadastro-consulta-card" id="consultaCategorias">
+            <div class="cadastro-topo">
+              <h2>Consulta de Categorias</h2>
 
-            <form id="formCategoria" class="form-grid">
-              <input type="hidden" id="categoriaCodigoCadastro" />
-
-              <div>
-                <label for="categoriaNomeCadastro">Categoria:</label>
-                <input id="categoriaNomeCadastro" placeholder="Ex.: Papelaria" />
-              </div>
-
-              <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">
-                  Salvar Categoria
-                </button>
-
-                <button class="btn btn-azul" type="button" id="btnNovoCategoria">
-                  Novo
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoCategoria">
+                  Nova Categoria
                 </button>
               </div>
-            </form>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -1180,10 +1227,156 @@
                     <th>Ações</th>
                   </tr>
                 </thead>
-
                 <tbody id="categoriasCadastroTabela"></tbody>
               </table>
             </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardCategoria">
+            <h2>Cadastro de Categorias</h2>
+
+            <form id="formCategoria" class="form-grid">
+              <input type="hidden" id="categoriaCodigoCadastro" />
+
+              <div>
+                <label for="categoriaNomeCadastro">Categoria:</label>
+                <input id="categoriaNomeCadastro" placeholder="Ex.: Papelaria" />
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Categoria</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarCategoria">Cancelar</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- MARCAS -->
+      <!-- ========================= -->
+      <section id="telaMarcas" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-consulta-card" id="consultaMarcas">
+            <div class="cadastro-topo">
+              <h2>Consulta de Marcas</h2>
+
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoMarca">
+                  Nova Marca
+                </button>
+              </div>
+            </div>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Marca</th>
+                    <th>Ativo</th>
+                    <th>Data Cadastro</th>
+                    <th>Última Alteração</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="marcasCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardMarca">
+            <h2>Cadastro de Marcas</h2>
+
+            <form id="formMarca" class="form-grid">
+              <input type="hidden" id="marcaCodigoCadastro" />
+
+              <div>
+                <label for="marcaNomeCadastro">Marca:</label>
+                <input id="marcaNomeCadastro" placeholder="Ex.: Nike" />
+              </div>
+
+              <div>
+                <label for="marcaAtivoCadastro">Ativo:</label>
+                <select id="marcaAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">Salvar Marca</button>
+                <button class="btn btn-azul" type="button" id="btnCancelarMarca">Cancelar</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- FORMAS DE PAGAMENTO -->
+      <!-- ========================= -->
+      <section id="telaFormasPagamento" class="tela">
+        <div class="cadastros-grid">
+          <section class="card cadastro-consulta-card" id="consultaFormasPagamento">
+            <div class="cadastro-topo">
+              <h2>Consulta de Formas de Pagamento</h2>
+
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoFormaPagamento">
+                  Nova Forma de Pagamento
+                </button>
+              </div>
+            </div>
+
+            <div class="tabela-wrapper tabela-cadastro">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cód.</th>
+                    <th>Forma de Pagamento</th>
+                    <th>Ativo</th>
+                    <th>Data Cadastro</th>
+                    <th>Última Alteração</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="formasPagamentoCadastroTabela"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardFormaPagamento">
+            <h2>Cadastro de Formas de Pagamento</h2>
+
+            <form id="formFormaPagamento" class="form-grid">
+              <input type="hidden" id="formaPagamentoCodigoCadastro" />
+
+              <div>
+                <label for="formaPagamentoDescricaoCadastro">Forma de Pagamento:</label>
+                <input id="formaPagamentoDescricaoCadastro" placeholder="Ex.: Pix" />
+              </div>
+
+              <div>
+                <label for="formaPagamentoAtivoCadastro">Ativo:</label>
+                <select id="formaPagamentoAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Forma
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnCancelarFormaPagamento">
+                  Cancelar
+                </button>
+              </div>
+            </form>
           </section>
         </div>
       </section>
@@ -1193,40 +1386,16 @@
       <!-- ========================= -->
       <section id="telaCondicoes" class="tela">
         <div class="cadastros-grid">
-          <section class="card cadastro-card">
-            <h2>Condições de Pagamento</h2>
+          <section class="card cadastro-consulta-card" id="consultaCondicoes">
+            <div class="cadastro-topo">
+              <h2>Consulta de Condições de Pagamento</h2>
 
-            <form id="formCondicaoPagamento" class="form-grid">
-              <input type="hidden" id="condicaoCodigoCadastro" />
-
-              <div>
-                <label for="condicaoDescricaoCadastro">Descrição:</label>
-                <input id="condicaoDescricaoCadastro" placeholder="Ex.: À vista" />
-              </div>
-
-              <div>
-                <label for="condicaoParcelasCadastro">Parcelas:</label>
-                <input id="condicaoParcelasCadastro" type="number" min="1" value="1" />
-              </div>
-
-              <div>
-                <label for="condicaoAtivoCadastro">Ativo:</label>
-                <select id="condicaoAtivoCadastro">
-                  <option value="true">Ativo</option>
-                  <option value="false">Inativo</option>
-                </select>
-              </div>
-
-              <div class="acoes-form">
-                <button class="btn btn-verde" type="submit">
-                  Salvar Condição
-                </button>
-
-                <button class="btn btn-azul" type="button" id="btnNovoCondicao">
-                  Novo
+              <div class="cadastro-topo-acoes">
+                <button class="btn btn-verde" type="button" id="btnNovoCondicao">
+                  Nova Condição
                 </button>
               </div>
-            </form>
+            </div>
 
             <div class="tabela-wrapper tabela-cadastro">
               <table>
@@ -1235,6 +1404,9 @@
                     <th>Cód.</th>
                     <th>Condição</th>
                     <th>Parcelas</th>
+                    <th>Multa %</th>
+                    <th>Juros %</th>
+                    <th>Desconto %</th>
                     <th>Ativo</th>
                     <th>Ações</th>
                   </tr>
@@ -1244,7 +1416,265 @@
               </table>
             </div>
           </section>
+
+          <section class="card cadastro-form-card oculto" id="formCardCondicao">
+            <h2>Cadastro de Condições de Pagamento</h2>
+
+            <form id="formCondicaoPagamento" class="form-grid">
+              <input type="hidden" id="condicaoCodigoCadastro" />
+
+              <div>
+                <label for="condicaoDescricaoCadastro">
+                  Condição de Pagamento:
+                </label>
+
+                <input
+                  id="condicaoDescricaoCadastro"
+                  placeholder="Ex.: 30/60/90 Boleto Bancário"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoMultaCadastro">
+                  Multa %:
+                </label>
+
+                <input
+                  id="condicaoMultaCadastro"
+                  inputmode="decimal"
+                  placeholder="Ex.: 2"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoJurosCadastro">
+                  Juros %:
+                </label>
+
+                <input
+                  id="condicaoJurosCadastro"
+                  inputmode="decimal"
+                  placeholder="Ex.: 5"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoDescontoCadastro">
+                  Desconto %:
+                </label>
+
+                <input
+                  id="condicaoDescontoCadastro"
+                  inputmode="decimal"
+                  placeholder="Ex.: 2"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoAtivoCadastro">
+                  Ativo:
+                </label>
+
+                <select id="condicaoAtivoCadastro">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+
+              <div class="form-separador">
+                Parcelas da Condição
+              </div>
+
+              <div>
+                <label for="condicaoParcelaNumeroCadastro">
+                  Nº Parcela:
+                </label>
+
+                <input
+                  id="condicaoParcelaNumeroCadastro"
+                  type="number"
+                  min="1"
+                  placeholder="Ex.: 1"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoParcelaDiasCadastro">
+                  Dias:
+                </label>
+
+                <input
+                  id="condicaoParcelaDiasCadastro"
+                  type="number"
+                  min="0"
+                  placeholder="Ex.: 30"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoParcelaPercentualCadastro">
+                  Percentual %:
+                </label>
+
+                <input
+                  id="condicaoParcelaPercentualCadastro"
+                  inputmode="decimal"
+                  placeholder="Ex.: 33,33"
+                />
+              </div>
+
+              <div>
+                <label for="condicaoParcelaFormaNomeCadastro">
+                  Forma Pgto:
+                </label>
+
+                <input type="hidden" id="condicaoParcelaFormaCadastro" />
+
+                <div class="campo-com-botao">
+                  <input
+                    id="condicaoParcelaFormaNomeCadastro"
+                    readonly
+                    placeholder="Selecionar forma"
+                  />
+
+                  <button
+                    class="btn btn-azul"
+                    type="button"
+                    id="btnConsultarFormaPagamentoCondicao"
+                  >
+                    🔎
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label>&nbsp;</label>
+
+                <button
+                  class="btn btn-azul"
+                  type="button"
+                  id="btnAdicionarParcelaCondicao"
+                >
+                  Adicionar Parcela
+                </button>
+              </div>
+
+              <div class="form-separador">
+                Tabela de Parcelas
+              </div>
+
+              <div class="tabela-wrapper tabela-cadastro tabela-parcelas-condicao">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nº</th>
+                      <th>Dias</th>
+                      <th>Percentual</th>
+                      <th>Forma Pgto</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="condicaoParcelasTabela"></tbody>
+                </table>
+              </div>
+
+              <div>
+                <label for="condicaoTotalPercentualCadastro">
+                  Total %:
+                </label>
+
+                <input
+                  id="condicaoTotalPercentualCadastro"
+                  readonly
+                  value="0%"
+                />
+              </div>
+
+              <input
+                type="hidden"
+                id="condicaoParcelasCadastro"
+                value="1"
+              />
+
+              <div class="acoes-form">
+                <button class="btn btn-verde" type="submit">
+                  Salvar Condição
+                </button>
+
+                <button class="btn btn-azul" type="button" id="btnCancelarCondicao">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </section>
         </div>
+      </section>
+
+      <!-- ========================= -->
+      <!-- FORMULÁRIOS OCULTOS AUXILIARES -->
+      <!-- UNIDADE / PARCELA -->
+      <!-- ========================= -->
+      <section class="card cadastro-form-card oculto" id="formCardUnidade">
+        <h2>Cadastro de Unidades</h2>
+
+        <form id="formUnidade" class="form-grid">
+          <input type="hidden" id="unidadeCodigoCadastro" />
+
+          <div>
+            <label for="unidadeSiglaCadastro">Unidade:</label>
+            <input id="unidadeSiglaCadastro" maxlength="10" placeholder="Ex.: UN" />
+          </div>
+
+          <div>
+            <label for="unidadeDescricaoCadastro">Descrição:</label>
+            <input id="unidadeDescricaoCadastro" placeholder="Ex.: Unidade" />
+          </div>
+
+          <div>
+            <label for="unidadeAtivoCadastro">Ativo:</label>
+            <select id="unidadeAtivoCadastro">
+              <option value="true">Ativo</option>
+              <option value="false">Inativo</option>
+            </select>
+          </div>
+
+          <div class="acoes-form">
+            <button class="btn btn-verde" type="submit">Salvar Unidade</button>
+            <button class="btn btn-azul" type="button" id="btnCancelarUnidade">Cancelar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card cadastro-form-card oculto" id="formCardParcela">
+        <h2>Cadastro de Parcelas</h2>
+
+        <form id="formParcela" class="form-grid">
+          <input type="hidden" id="parcelaCodigoCadastro" />
+
+          <div>
+            <label for="parcelaDescricaoCadastro">Descrição:</label>
+            <input id="parcelaDescricaoCadastro" placeholder="Ex.: 3 parcelas" />
+          </div>
+
+          <div>
+            <label for="parcelaQuantidadeCadastro">Quantidade:</label>
+            <input id="parcelaQuantidadeCadastro" type="number" min="1" placeholder="Ex.: 3" />
+          </div>
+
+          <div>
+            <label for="parcelaAtivoCadastro">Ativo:</label>
+            <select id="parcelaAtivoCadastro">
+              <option value="true">Ativo</option>
+              <option value="false">Inativo</option>
+            </select>
+          </div>
+
+          <div class="acoes-form">
+            <button class="btn btn-verde" type="submit">Salvar Parcela</button>
+            <button class="btn btn-azul" type="button" id="btnCancelarParcela">Cancelar</button>
+          </div>
+        </form>
       </section>
 
       <!-- ========================= -->
@@ -1254,7 +1684,9 @@
         <section class="card historico-card">
           <div class="titulo-com-acoes">
             <h2>Histórico de Vendas</h2>
-            <button id="btnLimparHistorico" class="btn btn-vermelho">Limpar Histórico</button>
+            <button id="btnLimparHistorico" class="btn btn-vermelho" type="button">
+              Limpar Histórico
+            </button>
           </div>
 
           <div class="tabela-wrapper tabela-historico">
@@ -1278,20 +1710,61 @@
     </main>
   </div>
 
-  <div id="modalPermissao" class="modal-permissao" role="dialog" aria-modal="true" aria-labelledby="modalPermissaoTitulo">
+  <!-- ========================= -->
+  <!-- MODAL DE PERMISSÃO -->
+  <!-- ========================= -->
+  <div
+    id="modalPermissao"
+    class="modal-permissao"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalPermissaoTitulo"
+  >
     <div class="modal-permissao-fundo"></div>
 
     <div class="modal-permissao-card">
       <div class="modal-permissao-icone">🔒</div>
       <h2 id="modalPermissaoTitulo">Acesso bloqueado</h2>
       <p id="modalPermissaoTexto">Você não tem permissão para acessar esta área.</p>
-      <button id="btnFecharPermissao" class="btn btn-azul" type="button">Entendi</button>
+      <button id="btnFecharPermissao" class="btn btn-azul" type="button">
+        Entendi
+      </button>
     </div>
   </div>
 
+  <!-- ========================= -->
+  <!-- TOAST -->
+  <!-- ========================= -->
   <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
-  <script src="script.js"></script>
+  <!-- ========================= -->
+  <!-- MODAL DE CONSULTA -->
+  <!-- ========================= -->
+  <div id="modalConsultaSelecao" class="modal-consulta-selecao">
+    <div class="modal-consulta-fundo"></div>
 
+    <div class="modal-consulta-card">
+      <div class="modal-consulta-topo">
+        <h2 id="modalConsultaTitulo">Consulta</h2>
+
+        <button class="btn btn-vermelho" type="button" id="btnFecharConsultaSelecao">
+          Fechar
+        </button>
+      </div>
+
+      <div class="modal-consulta-filtro">
+        <input id="modalConsultaFiltro" placeholder="Pesquisar..." />
+      </div>
+
+      <div class="modal-consulta-tabela">
+        <table>
+          <thead id="modalConsultaHead"></thead>
+          <tbody id="modalConsultaBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

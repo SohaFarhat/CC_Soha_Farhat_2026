@@ -1812,3 +1812,1390 @@ body.tema-escuro .modal-permissao-card {
 body.tema-escuro .modal-permissao-icone {
   background: rgba(129, 140, 248, 0.20);
 }
+
+
+/* =========================
+   24. CAMPO OBRIGATORIO
+   ========================= */
+
+.campo-obrigatorio {
+  color: #dc2626;
+  font-weight: 900;
+  margin-left: 4px;
+}
+
+.input-obrigatorio-vazio {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.16) !important;
+  background-color: #fff7f7 !important;
+}
+
+.select-custom.input-obrigatorio-vazio,
+select.input-obrigatorio-vazio {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.16) !important;
+}
+
+/* =========================
+   25. CAMPOS COM TAMANHO EXATO NOS CADASTROS
+   ========================= */
+
+/* O formulário agora encaixa os campos lado a lado,
+   sem criar colunas grandes com espaço vazio */
+.form-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-end !important;
+  gap: 12px 12px !important;
+}
+
+/* Cada bloco de campo fica apenas do tamanho necessário */
+.form-grid > div {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+}
+
+/* Inputs e selects ocupam o tamanho do bloco */
+.form-grid input,
+.form-grid select,
+.form-grid textarea,
+.form-grid .select-botao,
+.form-grid .select-animado {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* =========================
+   DOCUMENTOS
+   ========================= */
+
+/* CPF/CNPJ */
+.form-grid > div:has(#clienteCpfCadastro),
+.form-grid > div:has(#fornecedorCpfCnpjCadastro) {
+  width: 180px !important;
+}
+
+/* CPF funcionário */
+.form-grid > div:has(#funcionarioCpfCadastro) {
+  width: 150px !important;
+}
+
+/* RG */
+.form-grid > div:has(#clienteRgCadastro),
+.form-grid > div:has(#fornecedorRgCadastro),
+.form-grid > div:has(#funcionarioRgCadastro) {
+  width: 145px !important;
+}
+
+/* CNH */
+.form-grid > div:has(#funcionarioCnhCadastro) {
+  width: 145px !important;
+}
+
+/* Carteira de trabalho */
+.form-grid > div:has(#funcionarioCarteiraTrabalhoCadastro) {
+  width: 170px !important;
+}
+
+/* CEP */
+.form-grid > div:has(#clienteCepCadastro),
+.form-grid > div:has(#fornecedorCepCadastro),
+.form-grid > div:has(#funcionarioCepCadastro) {
+  width: 125px !important;
+}
+
+/* =========================
+   DATAS
+   ========================= */
+
+.form-grid > div:has(#clienteDataNascimentoCadastro),
+.form-grid > div:has(#fornecedorDataNascimentoCadastro),
+.form-grid > div:has(#funcionarioDataNascimentoCadastro) {
+  width: 170px !important;
+}
+
+/* =========================
+   CELULARES
+   ========================= */
+
+.form-grid > div:has(#clienteCelularCadastro),
+.form-grid > div:has(#fornecedorCelularCadastro),
+.form-grid > div:has(#funcionarioCelularCadastro) {
+  width: 155px !important;
+}
+
+/* =========================
+   CAMPOS CURTOS
+   ========================= */
+
+.form-grid > div:has(#clienteNumeroCadastro),
+.form-grid > div:has(#fornecedorNumeroCadastro),
+.form-grid > div:has(#funcionarioNumeroCadastro) {
+  width: 105px !important;
+}
+
+.form-grid > div:has(#paisSiglaCadastro),
+.form-grid > div:has(#estadoSiglaCadastro) {
+  width: 90px !important;
+}
+
+.form-grid > div:has(#condicaoParcelasCadastro) {
+  width: 110px !important;
+}
+
+.form-grid > div:has(#produtoEstoqueCadastro) {
+  width: 110px !important;
+}
+
+/* =========================
+   VALORES
+   ========================= */
+
+.form-grid > div:has(#produtoPrecoCadastro),
+.form-grid > div:has(#clienteLimiteCreditoCadastro),
+.form-grid > div:has(#fornecedorLimiteCreditoCadastro),
+.form-grid > div:has(#funcionarioSalarioCadastro) {
+  width: 150px !important;
+}
+
+/* =========================
+   NOMES E CAMPOS PRINCIPAIS
+   ========================= */
+
+.form-grid > div:has(#clienteNomeCadastro),
+.form-grid > div:has(#fornecedorNomeCadastro),
+.form-grid > div:has(#funcionarioNomeCadastro) {
+  width: 300px !important;
+}
+
+.form-grid > div:has(#produtoNomeCadastro) {
+  width: 320px !important;
+}
+
+.form-grid > div:has(#paisNomeCadastro),
+.form-grid > div:has(#estadoNomeCadastro),
+.form-grid > div:has(#cidadeNomeCadastro) {
+  width: 260px !important;
+}
+
+/* =========================
+   APELIDO / BAIRRO / COMPLEMENTO
+   ========================= */
+
+.form-grid > div:has(#clienteApelidoCadastro),
+.form-grid > div:has(#fornecedorApelidoCadastro),
+.form-grid > div:has(#funcionarioApelidoCadastro) {
+  width: 230px !important;
+}
+
+.form-grid > div:has(#clienteBairroCadastro),
+.form-grid > div:has(#fornecedorBairroCadastro),
+.form-grid > div:has(#funcionarioBairroCadastro) {
+  width: 220px !important;
+}
+
+.form-grid > div:has(#clienteComplementoCadastro),
+.form-grid > div:has(#fornecedorComplementoCadastro),
+.form-grid > div:has(#funcionarioComplementoCadastro) {
+  width: 230px !important;
+}
+
+/* =========================
+   E-MAIL E ENDEREÇO
+   ========================= */
+
+.form-grid > div:has(#clienteEmailCadastro),
+.form-grid > div:has(#fornecedorEmailCadastro),
+.form-grid > div:has(#funcionarioEmailCadastro) {
+  width: 300px !important;
+}
+
+.form-grid > div:has(#clienteEnderecoCadastro),
+.form-grid > div:has(#fornecedorEnderecoCadastro),
+.form-grid > div:has(#funcionarioEnderecoCadastro) {
+  width: 420px !important;
+}
+
+/* =========================
+   SELECTS DE LOCALIDADE
+   ========================= */
+
+.form-grid > div:has(#clientePaisCadastro),
+.form-grid > div:has(#fornecedorPaisCadastro),
+.form-grid > div:has(#funcionarioPaisCadastro),
+.form-grid > div:has(#estadoPaisCadastro) {
+  width: 230px !important;
+}
+
+.form-grid > div:has(#clienteEstadoCadastro),
+.form-grid > div:has(#fornecedorEstadoCadastro),
+.form-grid > div:has(#funcionarioEstadoCadastro),
+.form-grid > div:has(#cidadeEstadoCadastro) {
+  width: 230px !important;
+}
+
+.form-grid > div:has(#clienteCidadeCadastro),
+.form-grid > div:has(#fornecedorCidadeCadastro),
+.form-grid > div:has(#funcionarioCidadeCadastro) {
+  width: 240px !important;
+}
+
+/* =========================
+   SELECTS MÉDIOS
+   ========================= */
+
+.form-grid > div:has(#funcionarioCargoCadastro) {
+  width: 220px !important;
+}
+
+.form-grid > div:has(#produtoUnidadeCadastro) {
+  width: 180px !important;
+}
+
+.form-grid > div:has(#produtoCategoriaCadastro) {
+  width: 230px !important;
+}
+
+.form-grid > div:has(#clienteAtivoCadastro),
+.form-grid > div:has(#fornecedorAtivoCadastro),
+.form-grid > div:has(#funcionarioAtivoCadastro),
+.form-grid > div:has(#condicaoAtivoCadastro) {
+  width: 130px !important;
+}
+
+.form-grid > div:has(#clienteGeneroCadastro),
+.form-grid > div:has(#fornecedorGeneroCadastro),
+.form-grid > div:has(#funcionarioGeneroCadastro) {
+  width: 190px !important;
+}
+
+.form-grid > div:has(#clienteFormaPagamentoCadastro),
+.form-grid > div:has(#fornecedorFormaPagamentoCadastro) {
+  width: 290px !important;
+}
+
+/* =========================
+   CADASTROS SIMPLES
+   ========================= */
+
+.form-grid > div:has(#cargoNomeCadastro),
+.form-grid > div:has(#categoriaNomeCadastro) {
+  width: 260px !important;
+}
+
+.form-grid > div:has(#condicaoDescricaoCadastro) {
+  width: 260px !important;
+}
+
+/* =========================
+   BOTÕES
+   ========================= */
+
+.form-grid > .acoes-form {
+  width: auto !important;
+  min-width: 230px !important;
+  display: flex !important;
+  gap: 8px !important;
+  align-items: flex-end !important;
+  justify-content: flex-start !important;
+}
+
+/* =========================
+   CAMPOS DA VENDA
+   ========================= */
+
+#quantidadeInput {
+  max-width: 100px !important;
+  text-align: center;
+}
+
+#descontoInput {
+  max-width: 110px !important;
+  text-align: center;
+}
+
+#recebidoInput {
+  max-width: 150px !important;
+  text-align: center;
+}
+
+/* =========================
+   SELECT ANIMADO
+   ========================= */
+
+.form-grid .select-animado {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.form-grid .select-botao {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* =========================
+   RESPONSIVO
+   ========================= */
+
+@media (max-width: 760px) {
+  .form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-grid > div,
+  .form-grid > .acoes-form {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .form-grid input,
+  .form-grid select,
+  .form-grid textarea,
+  .form-grid .select-botao,
+  .form-grid .select-animado {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+.form-separador {
+  width: 100% !important;
+  flex-basis: 100% !important;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--borda-suave);
+  color: var(--primario);
+  font-weight: 950;
+  font-size: 1rem;
+}
+
+/* =========================
+   26. CONSULTA + FORMULÁRIO SOBREPOSTO CENTRAL NA TELA
+   ========================= */
+
+/* Consulta normal */
+.cadastro-consulta-card {
+  width: 100%;
+}
+
+/* Topo da consulta */
+.cadastro-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.cadastro-topo h2 {
+  margin-bottom: 0;
+}
+
+.cadastro-topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Formulário oculto */
+.cadastro-form-card.oculto {
+  display: none !important;
+}
+
+/* Modal centralizado na tela inteira */
+.cadastro-form-card:not(.oculto) {
+  position: fixed !important;
+
+  top: 18px !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+
+  transform: translateX(-50%) !important;
+
+  z-index: 4500 !important;
+
+  display: block !important;
+
+  width: min(960px, calc(100vw - 340px)) !important;
+  max-width: 960px !important;
+
+  height: auto !important;
+  max-height: calc(100vh - 36px) !important;
+
+  overflow: visible !important;
+
+  padding: 16px 18px !important;
+
+  border-radius: 18px !important;
+  border: 1px solid var(--borda-suave) !important;
+
+  background: var(--card) !important;
+  color: var(--texto) !important;
+
+  box-shadow:
+    0 28px 80px rgba(15, 23, 42, 0.38),
+    0 0 0 9999px rgba(15, 23, 42, 0.45) !important;
+
+  animation: formularioCentralEntrada 0.22s ease both;
+}
+
+/* Animação */
+@keyframes formularioCentralEntrada {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* Título */
+.cadastro-form-card:not(.oculto) h2 {
+  position: static !important;
+
+  margin: 0 0 10px !important;
+  padding: 0 0 10px !important;
+
+  background: transparent !important;
+  border-bottom: 1px solid var(--borda-suave);
+  border-radius: 0 !important;
+
+  font-size: 1rem !important;
+}
+
+/* Formulário interno compacto */
+.cadastro-form-card:not(.oculto) .form-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-end !important;
+
+  gap: 8px 10px !important;
+
+  padding-bottom: 0 !important;
+}
+
+/* Labels menores */
+.cadastro-form-card:not(.oculto) label {
+  margin: 6px 0 4px !important;
+  font-size: 0.82rem !important;
+}
+
+/* Inputs menores */
+.cadastro-form-card:not(.oculto) input,
+.cadastro-form-card:not(.oculto) select,
+.cadastro-form-card:not(.oculto) textarea,
+.cadastro-form-card:not(.oculto) .select-botao {
+  min-height: 36px !important;
+  padding: 7px 9px !important;
+  font-size: 0.88rem !important;
+  border-radius: 9px !important;
+}
+
+/* Separadores */
+.form-separador {
+  width: 100% !important;
+  flex-basis: 100% !important;
+
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+
+  border-top: 1px solid var(--borda-suave);
+
+  color: var(--primario);
+  font-weight: 950;
+  font-size: 0.9rem !important;
+}
+
+/* Botões */
+.cadastro-form-card:not(.oculto) .acoes-form {
+  width: 100% !important;
+  flex-basis: 100% !important;
+
+  padding-top: 10px !important;
+  margin-top: 8px !important;
+
+  border-top: 1px solid var(--borda-suave);
+}
+
+.cadastro-form-card:not(.oculto) .acoes-form .btn {
+  min-height: 36px !important;
+  padding: 8px 13px !important;
+}
+
+/* Tema escuro */
+body.tema-escuro .cadastro-form-card:not(.oculto) {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 9999px rgba(0, 0, 0, 0.55) !important;
+}
+
+body.tema-escuro .cadastro-form-card:not(.oculto) h2 {
+  border-bottom-color: #475569;
+}
+
+/* =========================
+   LARGURA DOS CAMPOS NO MODAL
+   ========================= */
+
+/* Tipo */
+.cadastro-form-card:not(.oculto) div:has(#clienteTipoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorTipoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioTipoCadastro) {
+  width: 150px !important;
+}
+
+/* Nome principal */
+.cadastro-form-card:not(.oculto) div:has(#clienteNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoNomeCadastro) {
+  width: 250px !important;
+}
+
+/* Apelido */
+.cadastro-form-card:not(.oculto) div:has(#clienteApelidoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorApelidoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioApelidoCadastro) {
+  width: 200px !important;
+}
+
+/* Gênero */
+.cadastro-form-card:not(.oculto) div:has(#clienteGeneroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorGeneroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioGeneroCadastro) {
+  width: 150px !important;
+}
+
+/* Data */
+.cadastro-form-card:not(.oculto) div:has(#clienteDataNascimentoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorDataNascimentoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioDataNascimentoCadastro) {
+  width: 150px !important;
+}
+
+/* Endereço */
+.cadastro-form-card:not(.oculto) div:has(#clienteEnderecoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorEnderecoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioEnderecoCadastro) {
+  width: 300px !important;
+}
+
+/* Número */
+.cadastro-form-card:not(.oculto) div:has(#clienteNumeroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorNumeroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioNumeroCadastro) {
+  width: 80px !important;
+}
+
+/* Bairro e complemento */
+.cadastro-form-card:not(.oculto) div:has(#clienteBairroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorBairroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioBairroCadastro),
+.cadastro-form-card:not(.oculto) div:has(#clienteComplementoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorComplementoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioComplementoCadastro) {
+  width: 170px !important;
+}
+
+/* CEP */
+.cadastro-form-card:not(.oculto) div:has(#clienteCepCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorCepCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCepCadastro) {
+  width: 110px !important;
+}
+
+/* País, estado, cidade */
+.cadastro-form-card:not(.oculto) div:has(#clientePaisCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorPaisCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioPaisCadastro),
+.cadastro-form-card:not(.oculto) div:has(#estadoPaisCadastro),
+.cadastro-form-card:not(.oculto) div:has(#clienteEstadoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorEstadoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioEstadoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#cidadeEstadoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#clienteCidadeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorCidadeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCidadeCadastro) {
+  width: 170px !important;
+}
+
+/* Celular */
+.cadastro-form-card:not(.oculto) div:has(#clienteCelularCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorCelularCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCelularCadastro) {
+  width: 135px !important;
+}
+
+/* E-mail */
+.cadastro-form-card:not(.oculto) div:has(#clienteEmailCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorEmailCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioEmailCadastro) {
+  width: 220px !important;
+}
+
+/* CPF/CNPJ */
+.cadastro-form-card:not(.oculto) div:has(#clienteCpfCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorCpfCnpjCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCpfCadastro) {
+  width: 150px !important;
+}
+
+/* RG */
+.cadastro-form-card:not(.oculto) div:has(#clienteRgCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorRgCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioRgCadastro) {
+  width: 115px !important;
+}
+
+/* Condição */
+.cadastro-form-card:not(.oculto) div:has(#clienteFormaPagamentoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorFormaPagamentoCadastro) {
+  width: 230px !important;
+}
+
+/* Limite, salário e preço */
+.cadastro-form-card:not(.oculto) div:has(#clienteLimiteCreditoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorLimiteCreditoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioSalarioCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoPrecoCadastro) {
+  width: 120px !important;
+}
+
+/* Ativo */
+.cadastro-form-card:not(.oculto) div:has(#clienteAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#condicaoAtivoCadastro) {
+  width: 110px !important;
+}
+
+/* Funcionário */
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCargoCadastro) {
+  width: 170px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCnhCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioCarteiraTrabalhoCadastro) {
+  width: 140px !important;
+}
+
+/* Produto */
+.cadastro-form-card:not(.oculto) div:has(#produtoEstoqueCadastro) {
+  width: 95px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#produtoUnidadeCadastro) {
+  width: 145px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#produtoCategoriaCadastro) {
+  width: 190px !important;
+}
+
+/* Cadastros simples */
+#formCardPais:not(.oculto),
+#formCardEstado:not(.oculto),
+#formCardCidade:not(.oculto),
+#formCardCargo:not(.oculto),
+#formCardCategoria:not(.oculto),
+#formCardCondicao:not(.oculto) {
+  width: 560px !important;
+  max-width: calc(100vw - 40px) !important;
+}
+
+/* Campos simples */
+.cadastro-form-card:not(.oculto) div:has(#paisNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#estadoNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#cidadeNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#cargoNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#categoriaNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#condicaoDescricaoCadastro) {
+  width: 240px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#paisSiglaCadastro),
+.cadastro-form-card:not(.oculto) div:has(#estadoSiglaCadastro),
+.cadastro-form-card:not(.oculto) div:has(#condicaoParcelasCadastro) {
+  width: 95px !important;
+}
+
+/* =========================
+   TELA MÉDIA
+   ========================= */
+
+@media (max-width: 1200px) {
+  .cadastro-form-card:not(.oculto) {
+    top: 14px !important;
+    left: 50% !important;
+    right: auto !important;
+
+    transform: translateX(-50%) !important;
+
+    width: calc(100vw - 340px) !important;
+    max-width: none !important;
+
+    max-height: calc(100vh - 28px) !important;
+    overflow-y: auto !important;
+  }
+
+  #formCardPais:not(.oculto),
+  #formCardEstado:not(.oculto),
+  #formCardCidade:not(.oculto),
+  #formCardCargo:not(.oculto),
+  #formCardCategoria:not(.oculto),
+  #formCardCondicao:not(.oculto) {
+    width: min(560px, calc(100vw - 340px)) !important;
+    max-width: none !important;
+  }
+}
+
+/* =========================
+   CELULAR
+   ========================= */
+
+@media (max-width: 760px) {
+  .cadastro-topo {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cadastro-topo-acoes {
+    width: 100%;
+  }
+
+  .cadastro-topo-acoes .btn {
+    width: 100%;
+  }
+
+  .cadastro-form-card:not(.oculto),
+  #formCardProduto:not(.oculto),
+  #formCardPais:not(.oculto),
+  #formCardEstado:not(.oculto),
+  #formCardCidade:not(.oculto),
+  #formCardCargo:not(.oculto),
+  #formCardCategoria:not(.oculto),
+  #formCardCondicao:not(.oculto) {
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+
+    transform: none !important;
+
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+
+    overflow-y: auto !important;
+
+    padding: 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .cadastro-form-card:not(.oculto) .form-grid > div,
+  .cadastro-form-card:not(.oculto) .acoes-form {
+    width: 100% !important;
+  }
+}
+
+/* =========================
+   27. BOTÕES DO FORMULÁRIO À DIREITA
+   ========================= */
+
+.cadastro-form-card:not(.oculto) .acoes-form {
+  width: 100% !important;
+  flex-basis: 100% !important;
+
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+
+  gap: 8px !important;
+
+  padding-top: 10px !important;
+  margin-top: 8px !important;
+
+  border-top: 1px solid var(--borda-suave);
+}
+
+.cadastro-form-card:not(.oculto) .acoes-form .btn {
+  min-height: 36px !important;
+  padding: 8px 16px !important;
+}
+
+/* No celular, os botões ocupam a largura toda */
+@media (max-width: 760px) {
+  .cadastro-form-card:not(.oculto) .acoes-form {
+    justify-content: stretch !important;
+  }
+
+  .cadastro-form-card:not(.oculto) .acoes-form .btn {
+    flex: 1 !important;
+    width: 100% !important;
+  }
+}
+
+/* =========================
+   29. CONSULTA DE SELEÇÃO
+   País / Estado / Cidade / Categoria / Unidade
+   ========================= */
+
+.campo-com-botao {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.campo-com-botao input {
+  flex: 1;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.campo-com-botao button {
+  min-width: 42px;
+  height: 36px;
+  padding: 0 10px;
+}
+
+body.tema-escuro .campo-com-botao input {
+  background: #111827;
+  color: #f8fafc;
+}
+
+.modal-consulta-selecao {
+  position: fixed;
+  inset: 0;
+  z-index: 9500 !important;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+.modal-consulta-selecao.mostrar {
+  display: flex;
+}
+
+.modal-consulta-fundo,
+.modal-consulta-selecao .modal-consulta-fundo {
+  position: absolute;
+  inset: 0;
+  z-index: 9501 !important;
+
+  background: rgba(15, 23, 42, 0.55);
+
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.modal-consulta-card,
+.modal-consulta-selecao .modal-consulta-card {
+  position: relative;
+  z-index: 9502 !important;
+
+  width: min(760px, 100%);
+  max-height: calc(100vh - 40px);
+
+  overflow: auto;
+
+  padding: 18px;
+
+  background: var(--card);
+  color: var(--texto);
+
+  border: 1px solid var(--borda-suave);
+  border-radius: 18px;
+
+  box-shadow: var(--sombra-forte);
+}
+
+.modal-consulta-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid var(--borda-suave);
+}
+
+.modal-consulta-topo h2 {
+  margin: 0;
+
+  font-size: 1.05rem;
+  font-weight: 950;
+}
+
+.modal-consulta-topo .btn-consulta-extra {
+  margin-left: auto;
+}
+
+.modal-consulta-topo #btnFecharConsultaSelecao {
+  margin-left: 0;
+}
+
+.modal-consulta-filtro {
+  margin-bottom: 12px;
+}
+
+.modal-consulta-filtro input {
+  width: 100%;
+}
+
+.modal-consulta-tabela {
+  max-height: 420px;
+  overflow: auto;
+
+  border: 1px solid var(--borda-suave);
+  border-radius: 12px;
+}
+
+.modal-consulta-tabela table {
+  width: 100%;
+}
+
+.modal-consulta-tabela tbody tr {
+  cursor: pointer;
+}
+
+.modal-consulta-tabela tbody tr:hover {
+  background: rgba(79, 70, 229, 0.14);
+}
+
+.modal-consulta-tabela .btn-pequeno {
+  min-height: 30px;
+  padding: 6px 10px;
+
+  font-size: 0.82rem;
+}
+
+body.tema-escuro .modal-consulta-card {
+  background: #1e293b;
+  border-color: #475569;
+}
+
+/* =========================
+   30. CAMPO UF
+   ========================= */
+
+.form-grid > div:has(#clienteUfCadastro),
+.form-grid > div:has(#fornecedorUfCadastro),
+.form-grid > div:has(#funcionarioUfCadastro),
+.cadastro-form-card:not(.oculto) div:has(#clienteUfCadastro),
+.cadastro-form-card:not(.oculto) div:has(#fornecedorUfCadastro),
+.cadastro-form-card:not(.oculto) div:has(#funcionarioUfCadastro) {
+  width: 70px !important;
+}
+
+#clienteUfCadastro,
+#fornecedorUfCadastro,
+#funcionarioUfCadastro {
+  text-align: center !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+}
+
+@media (max-width: 760px) {
+  .form-grid > div:has(#clienteUfCadastro),
+  .form-grid > div:has(#fornecedorUfCadastro),
+  .form-grid > div:has(#funcionarioUfCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#clienteUfCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#fornecedorUfCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#funcionarioUfCadastro) {
+    width: 100% !important;
+  }
+}
+
+/* =========================
+   31. CADASTRO SECUNDÁRIO
+   Cadastro aberto por cima de outro cadastro
+   ========================= */
+
+.cadastro-form-card.modal-cadastro-secundario:not(.oculto) {
+  z-index: 7600 !important;
+
+  box-shadow:
+    0 30px 90px rgba(15, 23, 42, 0.48),
+    0 0 0 9999px rgba(15, 23, 42, 0.58) !important;
+}
+
+body.tema-escuro .cadastro-form-card.modal-cadastro-secundario:not(.oculto) {
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.65),
+    0 0 0 9999px rgba(0, 0, 0, 0.62) !important;
+}
+
+/* =========================
+   32. NÍVEIS DOS CADASTROS SECUNDÁRIOS
+   Cidade / Estado / País / Unidade / Categoria
+   ========================= */
+
+.cadastro-form-card.modal-cadastro-secundario.modal-nivel-1:not(.oculto) {
+  z-index: 7600 !important;
+}
+
+.cadastro-form-card.modal-cadastro-secundario.modal-nivel-2:not(.oculto) {
+  z-index: 7800 !important;
+}
+
+.cadastro-form-card.modal-cadastro-secundario.modal-nivel-3:not(.oculto) {
+  z-index: 8000 !important;
+}
+
+.cadastro-form-card.modal-cadastro-secundario.modal-nivel-4:not(.oculto) {
+  z-index: 8200 !important;
+}
+
+/* =========================
+   33. CAMPOS DE CONSULTA
+   Produto / Categoria / Unidade
+   ========================= */
+
+.form-grid > div:has(#produtoUnidadeNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoUnidadeNomeCadastro) {
+  width: 180px !important;
+}
+
+.form-grid > div:has(#produtoCategoriaNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoCategoriaNomeCadastro) {
+  width: 230px !important;
+}
+
+.form-grid > div:has(#produtoUnidadeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoUnidadeCadastro) {
+  width: 180px !important;
+}
+
+.form-grid > div:has(#produtoCategoriaCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoCategoriaCadastro) {
+  width: 230px !important;
+}
+
+/* =========================
+   34. CADASTRO DE UNIDADE
+   ========================= */
+
+#formCardUnidade:not(.oculto) {
+  width: 620px !important;
+  max-width: calc(100vw - 40px) !important;
+}
+
+.form-grid > div:has(#unidadeSiglaCadastro),
+.cadastro-form-card:not(.oculto) div:has(#unidadeSiglaCadastro) {
+  width: 120px !important;
+}
+
+.form-grid > div:has(#unidadeDescricaoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#unidadeDescricaoCadastro) {
+  width: 260px !important;
+}
+
+.form-grid > div:has(#unidadeAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#unidadeAtivoCadastro) {
+  width: 120px !important;
+}
+
+/* =========================
+   35. CADASTRO DE PARCELA
+   ========================= */
+
+#formCardParcela:not(.oculto) {
+  width: 620px !important;
+  max-width: calc(100vw - 40px) !important;
+}
+
+.form-grid > div:has(#parcelaDescricaoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#parcelaDescricaoCadastro) {
+  width: 260px !important;
+}
+
+.form-grid > div:has(#parcelaQuantidadeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#parcelaQuantidadeCadastro) {
+  width: 120px !important;
+}
+
+.form-grid > div:has(#parcelaAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#parcelaAtivoCadastro) {
+  width: 120px !important;
+}
+
+/* =========================
+   36. CONDIÇÃO DE PAGAMENTO COMPLETA
+   ========================= */
+
+#formCardCondicao:not(.oculto) {
+  width: min(960px, calc(100vw - 340px)) !important;
+  max-width: 960px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoDescricaoCadastro) {
+  width: 300px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoMultaCadastro),
+.cadastro-form-card:not(.oculto) div:has(#condicaoJurosCadastro),
+.cadastro-form-card:not(.oculto) div:has(#condicaoDescontoCadastro) {
+  width: 115px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoAtivoCadastro) {
+  width: 120px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoParcelaNumeroCadastro) {
+  width: 110px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoParcelaDiasCadastro) {
+  width: 110px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoParcelaPercentualCadastro) {
+  width: 130px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoParcelaFormaCadastro) {
+  width: 220px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#btnAdicionarParcelaCondicao) {
+  width: 170px !important;
+}
+
+.cadastro-form-card:not(.oculto) div:has(#condicaoTotalPercentualCadastro) {
+  width: 130px !important;
+}
+
+#condicaoTotalPercentualCadastro {
+  text-align: center;
+  font-weight: 900;
+}
+
+/* =========================
+   37. TABELA DE PARCELAS DA CONDIÇÃO
+   ========================= */
+
+.tabela-parcelas-condicao {
+  width: 100% !important;
+  flex-basis: 100% !important;
+
+  min-height: 130px !important;
+  max-height: 230px !important;
+
+  overflow: auto;
+
+  margin-top: 4px;
+}
+
+.tabela-parcelas-condicao table {
+  width: 100%;
+}
+
+.tabela-parcelas-condicao th,
+.tabela-parcelas-condicao td {
+  white-space: nowrap;
+  padding: 8px 10px;
+}
+
+.tabela-parcelas-condicao .btn-pequeno {
+  min-height: 28px;
+  padding: 5px 9px;
+  font-size: 0.8rem;
+}
+
+/* =========================
+   38. TABELA DE CONDIÇÕES
+   ========================= */
+
+#consultaCondicoes .tabela-wrapper {
+  min-height: 420px;
+}
+
+#consultaCondicoes table {
+  min-width: 1000px;
+}
+
+#consultaCondicoes th:nth-child(1),
+#consultaCondicoes td:nth-child(1) {
+  width: 80px;
+}
+
+#consultaCondicoes th:nth-child(2),
+#consultaCondicoes td:nth-child(2) {
+  width: 240px;
+}
+
+#consultaCondicoes th:nth-child(3),
+#consultaCondicoes td:nth-child(3) {
+  width: 120px;
+}
+
+#consultaCondicoes th:nth-child(4),
+#consultaCondicoes td:nth-child(4),
+#consultaCondicoes th:nth-child(5),
+#consultaCondicoes td:nth-child(5),
+#consultaCondicoes th:nth-child(6),
+#consultaCondicoes td:nth-child(6) {
+  width: 130px;
+}
+
+#consultaCondicoes th:nth-child(7),
+#consultaCondicoes td:nth-child(7) {
+  width: 110px;
+}
+
+#consultaCondicoes th:nth-child(8),
+#consultaCondicoes td:nth-child(8) {
+  width: 180px;
+}
+
+/* =========================
+   39. RESPONSIVIDADE FINAL DOS MODAIS
+   ========================= */
+
+@media (max-width: 1200px) {
+  #formCardCondicao:not(.oculto) {
+    width: calc(100vw - 340px) !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  #formCardCondicao:not(.oculto),
+  #formCardUnidade:not(.oculto),
+  #formCardParcela:not(.oculto) {
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+
+    transform: none !important;
+
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+
+    overflow-y: auto !important;
+  }
+
+  .cadastro-form-card:not(.oculto) div:has(#condicaoDescricaoCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoMultaCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoJurosCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoDescontoCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoAtivoCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoParcelaNumeroCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoParcelaDiasCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoParcelaPercentualCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoParcelaFormaCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#btnAdicionarParcelaCondicao),
+  .cadastro-form-card:not(.oculto) div:has(#condicaoTotalPercentualCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#produtoUnidadeNomeCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#produtoCategoriaNomeCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#unidadeSiglaCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#unidadeDescricaoCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#unidadeAtivoCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#parcelaDescricaoCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#parcelaQuantidadeCadastro),
+  .cadastro-form-card:not(.oculto) div:has(#parcelaAtivoCadastro) {
+    width: 100% !important;
+  }
+}
+
+/* =========================
+   MARCAS / DDD / PRODUTO BLOQUEADO
+   ========================= */
+
+.form-grid > div:has(#cidadeDddCadastro),
+.cadastro-form-card:not(.oculto) div:has(#cidadeDddCadastro) {
+  width: 90px !important;
+}
+
+.form-grid > div:has(#marcaNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#marcaNomeCadastro) {
+  width: 260px !important;
+}
+
+.form-grid > div:has(#marcaAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#marcaAtivoCadastro) {
+  width: 120px !important;
+}
+
+.form-grid > div:has(#produtoMarcaNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoMarcaNomeCadastro) {
+  width: 210px !important;
+}
+
+.form-grid > div:has(#produtoCustoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#produtoCustoCadastro) {
+  width: 120px !important;
+}
+
+#produtoEstoqueCadastro[readonly],
+#produtoCustoCadastro[readonly] {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  font-weight: 800 !important;
+}
+
+body.tema-escuro #produtoEstoqueCadastro[readonly],
+body.tema-escuro #produtoCustoCadastro[readonly] {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+}
+
+#consultaProdutos table {
+  min-width: 1350px;
+}
+
+#consultaCidades table {
+  min-width: 950px;
+}
+
+#consultaMarcas table {
+  min-width: 850px;
+}
+
+/* =========================
+   FORMAS DE PAGAMENTO
+   ========================= */
+
+.form-grid > div:has(#formaPagamentoDescricaoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#formaPagamentoDescricaoCadastro) {
+  width: 280px !important;
+}
+
+.form-grid > div:has(#formaPagamentoAtivoCadastro),
+.cadastro-form-card:not(.oculto) div:has(#formaPagamentoAtivoCadastro) {
+  width: 120px !important;
+}
+
+.form-grid > div:has(#formaPagamentoNomeVenda) {
+  width: 100% !important;
+}
+
+#consultaFormasPagamento table {
+  min-width: 900px;
+}
+/* =========================
+   FORMA PGTO NA CONDIÇÃO
+   ========================= */
+
+.form-grid > div:has(#condicaoParcelaFormaNomeCadastro),
+.cadastro-form-card:not(.oculto) div:has(#condicaoParcelaFormaNomeCadastro) {
+  width: 230px !important;
+}

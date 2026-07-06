@@ -33,9 +33,10 @@ CREATE TABLE IF NOT EXISTS estados (
 CREATE TABLE IF NOT EXISTS cidades (
   id_cidade INT NOT NULL AUTO_INCREMENT,
   cidade VARCHAR(60) NOT NULL,
+  ddd VARCHAR(5) NULL,
   codigo_ibge VARCHAR(7) DEFAULT NULL,
   id_estado INT NOT NULL,
-  data_inclusao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   data_alteracao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id_cidade),
   UNIQUE KEY uk_cidade_estado (cidade, id_estado),
@@ -56,6 +57,25 @@ CREATE TABLE IF NOT EXISTS condicoes_pagamento (
   ativo TINYINT(1) NOT NULL DEFAULT 1
 );
 
+CREATE TABLE IF NOT EXISTS condicoes_pagamento_parcelas (
+  id_parcela_condicao INT AUTO_INCREMENT PRIMARY KEY,
+  id_condicao_pagamento INT NOT NULL,
+  numero_parcela INT NOT NULL,
+  dias INT NOT NULL,
+  percentual DECIMAL(10,2) NOT NULL,
+  forma_pagamento VARCHAR(80) NOT NULL,
+  FOREIGN KEY (id_condicao_pagamento) REFERENCES condicoes_pagamento(id_condicao_pagamento)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS formas_pagamento (
+  id_forma_pagamento INT AUTO_INCREMENT PRIMARY KEY,
+  forma_pagamento VARCHAR(80) NOT NULL UNIQUE,
+  ativo TINYINT(1) NOT NULL DEFAULT 1,
+  data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  data_alteracao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS categorias (
   id_categoria INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(80) NOT NULL UNIQUE
@@ -63,6 +83,7 @@ CREATE TABLE IF NOT EXISTS categorias (
 
 CREATE TABLE IF NOT EXISTS clientes (
   id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(30),
   cliente VARCHAR(50) NOT NULL,
   apelido VARCHAR(30),
   data_nascimento DATE,
@@ -70,7 +91,6 @@ CREATE TABLE IF NOT EXISTS clientes (
   rg VARCHAR(20),
   email VARCHAR(80),
   celular VARCHAR(20),
-  telefone VARCHAR(20),
   endereco VARCHAR(80),
   numero VARCHAR(20),
   complemento VARCHAR(120),
@@ -95,6 +115,7 @@ CREATE TABLE IF NOT EXISTS clientes (
 
 CREATE TABLE IF NOT EXISTS fornecedores (
   id_fornecedor INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(30),
   fornecedor VARCHAR(50) NOT NULL,
   apelido VARCHAR(30),
   data_nascimento DATE,
@@ -102,7 +123,6 @@ CREATE TABLE IF NOT EXISTS fornecedores (
   rg VARCHAR(20),
   email VARCHAR(80),
   celular VARCHAR(20),
-  telefone VARCHAR(20),
   endereco VARCHAR(80),
   numero VARCHAR(20),
   complemento VARCHAR(120),
@@ -127,6 +147,7 @@ CREATE TABLE IF NOT EXISTS fornecedores (
 
 CREATE TABLE IF NOT EXISTS funcionarios (
   id_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(30),
   funcionario VARCHAR(50) NOT NULL,
   apelido VARCHAR(30),
   data_nascimento DATE,
@@ -136,7 +157,6 @@ CREATE TABLE IF NOT EXISTS funcionarios (
   carteira_trabalho VARCHAR(40),
   email VARCHAR(80),
   celular VARCHAR(20),
-  telefone VARCHAR(20),
   endereco VARCHAR(80),
   numero VARCHAR(20),
   complemento VARCHAR(120),
@@ -162,6 +182,8 @@ CREATE TABLE IF NOT EXISTS funcionarios (
 CREATE TABLE IF NOT EXISTS produtos (
   id_produto INT AUTO_INCREMENT PRIMARY KEY,
   produto VARCHAR(40) NOT NULL,
+  marca VARCHAR(100) NULL,
+  custo DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   preco DECIMAL(10,2) NOT NULL,
   estoque INT NOT NULL DEFAULT 0,
   unidade VARCHAR(3) NOT NULL DEFAULT 'UN',
@@ -222,6 +244,28 @@ CREATE TABLE IF NOT EXISTS venda_itens (
     ON DELETE CASCADE,
   CONSTRAINT fk_item_produto
     FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+CREATE TABLE IF NOT EXISTS unidades (
+  id_unidade INT AUTO_INCREMENT PRIMARY KEY,
+  unidade VARCHAR(10) NOT NULL UNIQUE,
+  descricao VARCHAR(80) NOT NULL,
+  ativo TINYINT(1) NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS parcelas (
+  id_parcela INT AUTO_INCREMENT PRIMARY KEY,
+  descricao VARCHAR(80) NOT NULL,
+  quantidade INT NOT NULL DEFAULT 1,
+  ativo TINYINT(1) NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS marcas (
+  id_marca INT AUTO_INCREMENT PRIMARY KEY,
+  marca VARCHAR(100) NOT NULL UNIQUE,
+  ativo TINYINT(1) NOT NULL DEFAULT 1,
+  data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  data_alteracao DATETIME NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
 DROP TRIGGER IF EXISTS trg_baixar_estoque_venda;
@@ -297,3 +341,30 @@ INSERT IGNORE INTO categorias (nome) VALUES
 ('Papelaria'),
 ('Material escolar'),
 ('Eletrônicos');
+
+INSERT IGNORE INTO unidades (unidade, descricao, ativo) VALUES
+('UN', 'Unidade', 1),
+('CX', 'Caixa', 1),
+('KG', 'Quilo', 1),
+('LT', 'Litro', 1),
+('MT', 'Metro', 1),
+('PC', 'Peça', 1);
+
+INSERT IGNORE INTO parcelas (descricao, quantidade, ativo) VALUES
+('À vista', 1, 1),
+('2 parcelas', 2, 1),
+('3 parcelas', 3, 1),
+('4 parcelas', 4, 1),
+('5 parcelas', 5, 1),
+('6 parcelas', 6, 1);
+
+INSERT INTO marcas (marca, ativo) VALUES
+('SEM MARCA', 1);
+
+INSERT IGNORE INTO formas_pagamento (forma_pagamento, ativo) VALUES
+('DINHEIRO', 1),
+('PIX', 1),
+('CARTÃO DE DÉBITO', 1),
+('CARTÃO DE CRÉDITO', 1),
+('BOLETO BANCÁRIO', 1),
+('TRANSFERÊNCIA BANCÁRIA', 1);

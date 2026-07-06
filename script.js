@@ -24,6 +24,8 @@ const USUARIOS_SISTEMA = [
       'cidades',
       'cargos',
       'categorias',
+      'marcas',
+      'formasPagamento',
       'condicoes',
       'historico'
     ]
@@ -32,7 +34,23 @@ const USUARIOS_SISTEMA = [
     usuario: 'Gerente',
     senha: '1234',
     perfil: 'Gerente',
-    abas: ['dashboard', 'venda', 'clientes', 'produtos', 'fornecedores', 'funcionarios', 'paises', 'estados', 'cidades', 'cargos', 'categorias', 'condicoes', 'historico']
+    abas: [
+      'dashboard', 
+      'venda', 
+      'clientes', 
+      'produtos', 
+      'fornecedores', 
+      'funcionarios', 
+      'paises', 
+      'estados', 
+      'cidades', 
+      'cargos', 
+      'categorias', 
+      'marcas',
+      'formasPagamento',
+      'condicoes', 
+      'historico'
+    ]
   },
   {
     usuario: 'Vendedor',
@@ -49,6 +67,7 @@ const USUARIOS_SISTEMA = [
 ];
 
 let produtos = [];
+let marcas = [];
 let clientes = [];
 let fornecedores = [];
 let funcionarios = [];
@@ -58,6 +77,9 @@ let estados = [];
 let cidades = [];
 let cargos = [];
 let condicoesPagamento = [];
+let formasPagamentoCadastro = [];
+let unidades = [];
+let parcelas = [];
 let categorias = [];
 let dadosBancoCarregados = false;
 let carregandoDadosBanco = false;
@@ -320,6 +342,10 @@ async function carregarDadosDoBanco(mostrarAviso = false) {
       cargos,
       condicoesPagamento,
       categorias,
+      marcas,
+      formasPagamentoCadastro,
+      unidades,
+      parcelas,
       produtos,
       clientes,
       fornecedores,
@@ -332,6 +358,10 @@ async function carregarDadosDoBanco(mostrarAviso = false) {
       apiGet('/cargos'),
       apiGet('/condicoes-pagamento'),
       apiGet('/categorias'),
+      apiGet('/marcas'),
+      apiGet('/formas-pagamento'),
+      apiGet('/unidades'),
+      apiGet('/parcelas'),
       apiGet('/produtos'),
       apiGet('/clientes'),
       apiGet('/fornecedores'),
@@ -460,6 +490,8 @@ async function navegarPara(tela) {
     tela === 'cidades' ||
     tela === 'cargos' ||
     tela === 'categorias' ||
+    tela === 'marcas' ||
+    tela === 'formasPagamento' ||
     tela === 'condicoes'
   ) {
   recarregarLocalidades();
@@ -488,15 +520,15 @@ function preencherProdutos() {
   }
 
   const produtosOrdenados = ordenarPorCodigo(produtos)
-    .filter(produto => produto.ativo !== false);
+    .filter(itemProduto => itemProduto.ativo !== false);
 
   produtoSelect.innerHTML = '<option value="">Selecione</option>';
 
-  produtosOrdenados.forEach((produto, indice) => {
+  produtosOrdenados.forEach((itemProduto, indice) => {
     const option = document.createElement('option');
 
-    option.value = produto.codigo;
-    option.textContent = `${indice + 1} - ${produto.nome}`;
+    option.value = itemProduto.codigo;
+    option.textContent = `${indice + 1} - ${itemProduto.produto}`;
 
     produtoSelect.appendChild(option);
   });
@@ -517,13 +549,13 @@ function preencherFuncionariosVenda() {
 }
 
 function preencherFormasPagamento() {
-  preencherSelect(
-    formaPagamentoSelect,
-    formasPagamento,
-    'codigo',
-    'descricao',
-    'Selecionar'
-  );
+  if (!formaPagamentoSelect) {
+    return;
+  }
+
+  if (!formaPagamentoSelect.value && $('formaPagamentoNomeVenda')) {
+    $('formaPagamentoNomeVenda').value = '';
+  }
 }
 
 function preencherCondicoesPagamento() {
@@ -557,30 +589,31 @@ function preencherCondicoesPagamento() {
 }
 
 function preencherLocalidadesNosFormularios() {
-  preencherSelect($('clientePaisCadastro'), paises, 'codigo', 'pais', 'Selecionar');
-  preencherSelect($('fornecedorPaisCadastro'), paises, 'codigo', 'pais', 'Selecionar');
-  preencherSelect($('funcionarioPaisCadastro'), paises, 'codigo', 'pais', 'Selecionar');
-
-  preencherSelect($('clienteEstadoCadastro'), estados, 'codigo', e => `${e.estado} - ${e.uf}`, 'Selecionar');
-  preencherSelect($('fornecedorEstadoCadastro'), estados, 'codigo', e => `${e.estado} - ${e.uf}`, 'Selecionar');
-  preencherSelect($('funcionarioEstadoCadastro'), estados, 'codigo', e => `${e.estado} - ${e.uf}`, 'Selecionar');
-
-  preencherSelect($('clienteCidadeCadastro'), cidades, 'codigo', c => `${c.cidade} - ${c.uf}`, 'Selecionar');
-  preencherSelect($('fornecedorCidadeCadastro'), cidades, 'codigo', c => `${c.cidade} - ${c.uf}`, 'Selecionar');
-  preencherSelect($('funcionarioCidadeCadastro'), cidades, 'codigo', c => `${c.cidade} - ${c.uf}`, 'Selecionar');
-
   preencherSelect($('funcionarioCargoCadastro'), cargos, 'codigo', 'cargo', 'Selecionar');
 }
 
 function selecionarPaisEstadoPorCidade(prefixo, idCidade) {
   const cidade = cidades.find(c => Number(c.codigo) === Number(idCidade));
-  if (!cidade) return;
 
-  const paisSelect = $(`${prefixo}PaisCadastro`);
-  const estadoSelect = $(`${prefixo}EstadoCadastro`);
+  if (!cidade) {
+    return;
+  }
 
-  if (paisSelect) paisSelect.value = cidade.idPais || '';
-  if (estadoSelect) estadoSelect.value = cidade.idEstado || '';
+  const cidadeId = $(`${prefixo}CidadeCadastro`);
+  const cidadeNome = $(`${prefixo}CidadeNomeCadastro`);
+  const uf = $(`${prefixo}UfCadastro`);
+
+  if (cidadeId) {
+    cidadeId.value = cidade.codigo || '';
+  }
+
+  if (cidadeNome) {
+    cidadeNome.value = cidade.cidade || '';
+  }
+
+  if (uf) {
+    uf.value = cidade.uf || '';
+  }
 }
 
 function produtoSelecionado() {
@@ -714,7 +747,7 @@ function recarregarTabela() {
 
     tr.innerHTML = `
       <td>${item.produto.codigo}</td>
-      <td>${item.produto.nome}</td>
+      <td>${item.produto.produto}</td>
       <td>${formatarMoeda(item.produto.preco)}</td>
       <td>${item.quantidade}</td>
       <td>${item.produto.unidade || 'UN'}</td>
@@ -750,7 +783,7 @@ function gerarRecibo() {
   const recebido = obterRecebido();
   const cliente = clienteSelecionado();
   const funcionario = funcionarioSelecionado();
-  const forma = formasPagamento.find(item => item.codigo === formaPagamentoSelect.value);
+  const forma = formaPagamentoSelect?.value || '';
 
   const condicao = condicoesPagamento.find(item => {
     return Number(item.codigo) === Number(condicaoPagamentoVendaSelect.value);
@@ -763,12 +796,12 @@ function gerarRecibo() {
   linhas.push(`Data: ${new Date().toLocaleString(cultura)}`);
   linhas.push(`Cliente: ${cliente ? cliente.nome : '-'}`);
   linhas.push(`Funcionário: ${funcionario ? funcionario.funcionario : '-'}`);
-  linhas.push(`Forma de pagamento: ${forma ? forma.descricao : '-'}`);
+  linhas.push(`Forma de pagamento: ${forma || '-'}`);
   linhas.push(`Condição de pagamento: ${condicao ? condicao.descricao : '-'}`);
   linhas.push('------------------------------------');
 
   carrinho.forEach(item => {
-    linhas.push(item.produto.nome);
+    linhas.push(item.produto.produto);
     linhas.push(`Qtd: ${item.quantidade} ${item.produto.unidade || 'UN'}  Preço: ${formatarMoeda(item.produto.preco)}`);
     linhas.push(`Subtotal: ${formatarMoeda(Number(item.produto.preco) * item.quantidade)}`);
     linhas.push('------------------------------------');
@@ -811,7 +844,7 @@ async function finalizarVenda() {
   const venda = {
     cliente: { codigo: cliente.codigo, nome: cliente.nome },
     funcionario: funcionario ? { codigo: funcionario.codigo, funcionario: funcionario.funcionario } : null,
-    formaPagamento: formaPagamentoSelect.options[formaPagamentoSelect.selectedIndex]?.textContent || '',
+    formaPagamento: formaPagamentoSelect.value || '',
     idCondicaoPagamento: Number(condicaoPagamentoVendaSelect.value) || null,
     condicaoPagamento: condicaoPagamentoVendaSelect.options[condicaoPagamentoVendaSelect.selectedIndex]?.textContent || '',
     subtotal: obterSubtotal(),
@@ -822,7 +855,7 @@ async function finalizarVenda() {
     troco: Math.max(recebido - total, 0),
     itens: carrinho.map(item => ({
       produtoCodigo: item.produto.codigo,
-      produtoNome: item.produto.nome,
+      produtoNome: item.produto.produto,
       produtoUnidade: item.produto.unidade || 'UN',
       preco: item.produto.preco,
       quantidade: item.quantidade,
@@ -873,37 +906,374 @@ function limparVendaAtual(confirmar) {
   limparCamposVendaSemRecibo();
 }
 
+const CAMPOS_OBRIGATORIOS_CADASTROS = {
+  produto: [
+    {
+      id: 'produtoNomeCadastro',
+      nome: 'Produto'
+    },
+    {
+      id: 'produtoPrecoCadastro',
+      nome: 'Preço'
+    },
+    {
+      id: 'produtoEstoqueCadastro',
+      nome: 'Estoque'
+    },
+    {
+      id: 'produtoUnidadeCadastro',
+      nome: 'Unidade'
+    },
+    {
+      id: 'produtoCategoriaCadastro',
+      nome: 'Categoria'
+    }
+  ],
+
+  cliente: [
+    {
+      id: 'clienteTipoCadastro',
+      nome: 'Tipo'
+    },
+    {
+      id: 'clienteNomeCadastro',
+      nome: 'Cliente'
+    },
+    {
+      id: 'clienteCpfCadastro',
+      nome: 'CPF/CNPJ'
+    },
+    {
+      id: 'clienteCelularCadastro',
+      nome: 'Celular'
+    },
+    {
+      id: 'clienteCidadeCadastro',
+      nome: 'Cidade'
+    },
+    {
+      id: 'clienteAtivoCadastro',
+      nome: 'Ativo'
+    },
+    {
+      id: 'clienteFormaPagamentoCadastro',
+      nome: 'Condição de pagamento padrão'
+    }
+  ],
+
+  fornecedor: [
+    {
+      id: 'fornecedorTipoCadastro',
+      nome: 'Tipo'
+    },
+    {
+      id: 'fornecedorNomeCadastro',
+      nome: 'Fornecedor'
+    },
+    {
+      id: 'fornecedorCpfCnpjCadastro',
+      nome: 'CPF/CNPJ'
+    },
+    {
+      id: 'fornecedorCelularCadastro',
+      nome: 'Celular'
+    },
+    {
+      id: 'fornecedorCidadeCadastro',
+      nome: 'Cidade'
+    },
+    {
+      id: 'fornecedorAtivoCadastro',
+      nome: 'Ativo'
+    },
+    {
+      id: 'fornecedorFormaPagamentoCadastro',
+      nome: 'Condição de pagamento padrão'
+    }
+  ],
+
+  funcionario: [
+    {
+      id: 'funcionarioTipoCadastro',
+      nome: 'Tipo'
+    },
+    {
+      id: 'funcionarioNomeCadastro',
+      nome: 'Funcionário'
+    },
+    {
+      id: 'funcionarioCpfCadastro',
+      nome: 'CPF/CNPJ'
+    },
+    {
+      id: 'funcionarioCargoCadastro',
+      nome: 'Cargo'
+    },
+    {
+      id: 'funcionarioCelularCadastro',
+      nome: 'Celular'
+    },
+    {
+      id: 'funcionarioCidadeCadastro',
+      nome: 'Cidade'
+    },
+    {
+      id: 'funcionarioAtivoCadastro',
+      nome: 'Ativo'
+    }
+  ],
+
+  pais: [
+    {
+      id: 'paisNomeCadastro',
+      nome: 'País'
+    },
+    {
+      id: 'paisSiglaCadastro',
+      nome: 'Sigla'
+    }
+  ],
+
+  estado: [
+    {
+      id: 'estadoPaisCadastro',
+      nome: 'País'
+    },
+    {
+      id: 'estadoNomeCadastro',
+      nome: 'Estado'
+    },
+    {
+      id: 'estadoSiglaCadastro',
+      nome: 'Sigla'
+    }
+  ],
+
+  cidade: [
+    {
+      id: 'cidadeEstadoCadastro',
+      nome: 'Estado'
+    },
+    {
+      id: 'cidadeNomeCadastro',
+      nome: 'Cidade'
+    }
+  ],
+
+  cargo: [
+    {
+      id: 'cargoNomeCadastro',
+      nome: 'Cargo'
+    }
+  ],
+
+  categoria: [
+    {
+      id: 'categoriaNomeCadastro',
+      nome: 'Categoria'
+    }
+  ],
+
+  condicao: [
+    {
+      id: 'condicaoDescricaoCadastro',
+      nome: 'Descrição'
+    },
+    {
+      id: 'condicaoParcelasCadastro',
+      nome: 'Parcelas'
+    },
+    {
+      id: 'condicaoAtivoCadastro',
+      nome: 'Ativo'
+    }
+  ]
+};
+
+function obterTodosCamposObrigatorios() {
+  return Object.values(CAMPOS_OBRIGATORIOS_CADASTROS).flat();
+}
+
+function aplicarAsteriscosObrigatorios() {
+  obterTodosCamposObrigatorios().forEach(campoObrigatorio => {
+    const campo = $(campoObrigatorio.id);
+
+    if (!campo) {
+      return;
+    }
+
+    const label = document.querySelector(`label[for="${campoObrigatorio.id}"]`);
+
+    if (!label) {
+      return;
+    }
+
+    if (label.querySelector('.campo-obrigatorio')) {
+      return;
+    }
+
+    const asterisco = document.createElement('span');
+    asterisco.className = 'campo-obrigatorio';
+    asterisco.textContent = '*';
+
+    label.appendChild(asterisco);
+  });
+}
+
+function limparErrosObrigatorios() {
+  document.querySelectorAll('.input-obrigatorio-vazio').forEach(campo => {
+    campo.classList.remove('input-obrigatorio-vazio');
+  });
+}
+
+function valorCampoObrigatorioVazio(campo) {
+  if (!campo) {
+    return false;
+  }
+
+  const valor = String(campo.value || '').trim();
+
+  return valor === '';
+}
+
+function marcarCampoObrigatorioVazio(campo) {
+  if (!campo) {
+    return;
+  }
+
+  campo.classList.add('input-obrigatorio-vazio');
+
+  const selectAnimado = campo.closest('.select-wrapper') || campo.parentElement;
+
+  if (selectAnimado && selectAnimado.classList.contains('select-custom')) {
+    selectAnimado.classList.add('input-obrigatorio-vazio');
+  }
+}
+
+function removerErroCampoObrigatorio(campo) {
+  if (!campo) {
+    return;
+  }
+
+  campo.classList.remove('input-obrigatorio-vazio');
+
+  const selectAnimado = campo.closest('.select-wrapper') || campo.parentElement;
+
+  if (selectAnimado && selectAnimado.classList.contains('select-custom')) {
+    selectAnimado.classList.remove('input-obrigatorio-vazio');
+  }
+}
+
+function validarCamposObrigatorios(campos) {
+  limparErrosObrigatorios();
+
+  const camposVazios = [];
+
+  campos.forEach(campoObrigatorio => {
+    const campo = $(campoObrigatorio.id);
+
+    if (!campo) {
+      return;
+    }
+
+    if (valorCampoObrigatorioVazio(campo)) {
+      camposVazios.push(campoObrigatorio);
+      marcarCampoObrigatorioVazio(campo);
+    }
+  });
+
+  if (camposVazios.length === 0) {
+    return true;
+  }
+
+  const primeiroCampo = $(camposVazios[0].id);
+
+  if (primeiroCampo) {
+    primeiroCampo.focus();
+  }
+
+  mostrarMensagem(
+    `Preencha o campo obrigatório: ${camposVazios[0].nome}.`,
+    'erro'
+  );
+
+  return false;
+}
+
+function validarCadastroObrigatorio(tipo) {
+  const campos = CAMPOS_OBRIGATORIOS_CADASTROS[tipo] || [];
+
+  return validarCamposObrigatorios(campos);
+}
+
+function ativarRemocaoErroObrigatorio() {
+  document.querySelectorAll('input, select, textarea').forEach(campo => {
+    campo.addEventListener('input', () => {
+      if (!valorCampoObrigatorioVazio(campo)) {
+        removerErroCampoObrigatorio(campo);
+      }
+    });
+
+    campo.addEventListener('change', () => {
+      if (!valorCampoObrigatorioVazio(campo)) {
+        removerErroCampoObrigatorio(campo);
+      }
+    });
+  });
+}
+
 async function salvarProduto(event) {
   event.preventDefault();
 
+  if (!validarCadastroObrigatorio('produto')) {
+    return;
+  }
+
   const codigoEditando = Number($('produtoCodigoCadastro').value);
-  const produto = {
-    nome: $('produtoNomeCadastro').value.trim(),
+
+  const dadosProduto = {
+    produto: $('produtoNomeCadastro').value.trim().toUpperCase(),
     preco: obterDecimal($('produtoPrecoCadastro').value),
-    estoque: Number.parseInt($('produtoEstoqueCadastro').value, 10),
     unidade: $('produtoUnidadeCadastro').value || 'UN',
-    categoria: $('produtoCategoriaCadastro').value.trim()
+    categoria: $('produtoCategoriaCadastro').value.trim().toUpperCase(),
+    marca: $('produtoMarcaCadastro')?.value.trim().toUpperCase() || ''
   };
 
-  if (!produto.nome || produto.preco <= 0 || !Number.isInteger(produto.estoque) || produto.estoque < 0) {
-    mostrarMensagem('Preencha produto, preço e estoque corretamente.', 'aviso');
+  if (!dadosProduto.produto || dadosProduto.preco <= 0) {
+    mostrarMensagem('Preencha produto e preço corretamente.', 'aviso');
     return;
   }
 
   try {
     if (USAR_BANCO) {
-      if (codigoEditando) await apiPut(`/produtos/${codigoEditando}`, produto);
-      else await apiPost('/produtos', produto);
+      if (codigoEditando) {
+        await apiPut(`/produtos/${codigoEditando}`, dadosProduto);
+      } else {
+        await apiPost('/produtos', {
+          ...dadosProduto,
+          estoque: 0,
+          custo: 0
+        });
+      }
+
       produtos = await apiGet('/produtos');
     } else if (codigoEditando) {
-      Object.assign(produtos.find(p => Number(p.codigo) === codigoEditando), produto);
+      Object.assign(produtos.find(p => Number(p.codigo) === codigoEditando), dadosProduto);
     } else {
-      produtos.push({ codigo: proximoCodigo(produtos), ...produto });
+      produtos.push({
+        codigo: proximoCodigo(produtos),
+        ...dadosProduto,
+        estoque: 0,
+        custo: 0
+      });
     }
 
     limparFormProduto();
     atualizarTudoCadastrosEVenda();
+
     mostrarMensagem('Produto salvo com sucesso!', 'sucesso');
+
+    fecharFormularioCadastro('produto');
   } catch (erro) {
     console.error(erro);
     mostrarMensagem(mensagemErroApi(erro, 'salvar produto'), 'erro');
@@ -911,16 +1281,50 @@ async function salvarProduto(event) {
 }
 
 function editarProduto(codigo) {
-  const produto = produtos.find(p => Number(p.codigo) === Number(codigo));
-  if (!produto) return;
+  const itemProduto = produtos.find(p => Number(p.codigo) === Number(codigo));
 
-  $('produtoCodigoCadastro').value = produto.codigo;
-  $('produtoNomeCadastro').value = produto.nome || '';
-  $('produtoPrecoCadastro').value = Number(produto.preco || 0).toFixed(2).replace('.', ',');
-  $('produtoEstoqueCadastro').value = produto.estoque || 0;
-  $('produtoUnidadeCadastro').value = produto.unidade || 'UN';
-  $('produtoCategoriaCadastro').value = produto.categoria || '';
-  atualizarSelectAnimado($('produtoUnidadeCadastro'));
+  if (!itemProduto) {
+    return;
+  }
+
+  $('produtoCodigoCadastro').value = itemProduto.codigo;
+  $('produtoNomeCadastro').value = itemProduto.produto || '';
+  $('produtoPrecoCadastro').value = Number(itemProduto.preco || 0).toFixed(2).replace('.', ',');
+
+  if ($('produtoEstoqueCadastro')) {
+    $('produtoEstoqueCadastro').value = itemProduto.estoque || 0;
+    $('produtoEstoqueCadastro').readOnly = true;
+  }
+
+  if ($('produtoCustoCadastro')) {
+    $('produtoCustoCadastro').value = Number(itemProduto.custo || 0).toFixed(2).replace('.', ',');
+    $('produtoCustoCadastro').readOnly = true;
+  }
+
+  $('produtoUnidadeCadastro').value = itemProduto.unidade || 'UN';
+
+  const unidade = unidades.find(item => item.unidade === itemProduto.unidade);
+
+  if (unidade) {
+    $('produtoUnidadeNomeCadastro').value = `${unidade.unidade} - ${unidade.descricao || ''}`;
+  } else {
+    $('produtoUnidadeNomeCadastro').value = itemProduto.unidade || '';
+  }
+
+  $('produtoCategoriaCadastro').value = itemProduto.categoria || '';
+  $('produtoCategoriaNomeCadastro').value = itemProduto.categoria || '';
+
+  if ($('produtoMarcaCadastro')) {
+    $('produtoMarcaCadastro').value = itemProduto.marca || '';
+  }
+
+  if ($('produtoMarcaNomeCadastro')) {
+    $('produtoMarcaNomeCadastro').value = itemProduto.marca || '';
+  }
+
+  atualizarSelectsAnimados();
+
+  abrirFormularioCadastro('produto');
 }
 
 async function excluirProduto(codigo) {
@@ -950,8 +1354,44 @@ async function excluirProduto(codigo) {
 
 function limparFormProduto() {
   $('formProduto').reset();
+
   $('produtoCodigoCadastro').value = '';
-  atualizarSelectAnimado($('produtoUnidadeCadastro'));
+
+  if ($('produtoUnidadeCadastro')) {
+    $('produtoUnidadeCadastro').value = '';
+  }
+
+  if ($('produtoUnidadeNomeCadastro')) {
+    $('produtoUnidadeNomeCadastro').value = '';
+  }
+
+  if ($('produtoCategoriaCadastro')) {
+    $('produtoCategoriaCadastro').value = '';
+  }
+
+  if ($('produtoCategoriaNomeCadastro')) {
+    $('produtoCategoriaNomeCadastro').value = '';
+  }
+
+  if ($('produtoMarcaCadastro')) {
+    $('produtoMarcaCadastro').value = '';
+  }
+
+  if ($('produtoMarcaNomeCadastro')) {
+    $('produtoMarcaNomeCadastro').value = '';
+  }
+
+  if ($('produtoEstoqueCadastro')) {
+    $('produtoEstoqueCadastro').value = '0';
+    $('produtoEstoqueCadastro').readOnly = true;
+  }
+
+  if ($('produtoCustoCadastro')) {
+    $('produtoCustoCadastro').value = '0,00';
+    $('produtoCustoCadastro').readOnly = true;
+  }
+
+  atualizarSelectsAnimados();
 }
 
 function dadosCliente() {
@@ -959,6 +1399,7 @@ function dadosCliente() {
   const condicaoSelect = $('clienteFormaPagamentoCadastro');
 
   return {
+    tipo: $('clienteTipoCadastro')?.value || '',
     nome: $('clienteNomeCadastro').value.trim(),
     apelido: $('clienteApelidoCadastro').value.trim(),
     dataNascimento: $('clienteDataNascimentoCadastro').value,
@@ -966,7 +1407,6 @@ function dadosCliente() {
     rg: $('clienteRgCadastro').value.trim(),
     email: $('clienteEmailCadastro').value.trim(),
     celular: $('clienteCelularCadastro').value.trim(),
-    telefone: $('clienteTelefoneCadastro').value.trim(),
     endereco: $('clienteEnderecoCadastro').value.trim(),
     numero: $('clienteNumeroCadastro').value.trim(),
     complemento: $('clienteComplementoCadastro').value.trim(),
@@ -984,6 +1424,11 @@ function dadosCliente() {
 
 async function salvarCliente(event) {
   event.preventDefault();
+
+  if (!validarCadastroObrigatorio('cliente')) {
+    return;
+  }
+
   const codigoEditando = Number($('clienteCodigoCadastro').value);
   const cliente = dadosCliente();
 
@@ -1006,10 +1451,12 @@ async function salvarCliente(event) {
     limparFormCliente();
     atualizarTudoCadastrosEVenda();
     mostrarMensagem('Cliente salvo com sucesso!', 'sucesso');
+    fecharFormularioCadastro('cliente');
   } catch (erro) {
     console.error(erro);
     mostrarMensagem(mensagemErroApi(erro, 'salvar cliente'), 'erro');
   }
+  
 }
 
 function editarCliente(codigo) {
@@ -1017,6 +1464,7 @@ function editarCliente(codigo) {
   if (!cliente) return;
 
   $('clienteCodigoCadastro').value = cliente.codigo;
+  $('clienteTipoCadastro').value = cliente.tipo || '';
   $('clienteNomeCadastro').value = cliente.nome || '';
   $('clienteApelidoCadastro').value = cliente.apelido || '';
   $('clienteDataNascimentoCadastro').value = normalizarData(cliente.dataNascimento);
@@ -1024,7 +1472,6 @@ function editarCliente(codigo) {
   $('clienteRgCadastro').value = cliente.rg || '';
   $('clienteEmailCadastro').value = cliente.email || '';
   $('clienteCelularCadastro').value = cliente.celular || '';
-  $('clienteTelefoneCadastro').value = cliente.telefone || '';
   $('clienteEnderecoCadastro').value = cliente.endereco || '';
   $('clienteNumeroCadastro').value = cliente.numero || '';
   $('clienteComplementoCadastro').value = cliente.complemento || '';
@@ -1037,6 +1484,9 @@ function editarCliente(codigo) {
   $('clienteFormaPagamentoCadastro').value = cliente.idCondicaoPagamento || '';
   $('clienteLimiteCreditoCadastro').value = cliente.limiteCredito || 0;
   atualizarSelectsAnimados();
+
+  abrirFormularioCadastro('cliente');
+
 }
 
 async function excluirCliente(codigo) {
@@ -1065,34 +1515,71 @@ function limparFormCliente() {
   atualizarSelectsAnimados();
 }
 
+function dadosCliente() {
+  const cidadeId = $('clienteCidadeCadastro');
+  const cidadeNome = $('clienteCidadeNomeCadastro');
+  const condicaoSelect = $('clienteFormaPagamentoCadastro');
+
+  return {
+    tipo: $('clienteTipoCadastro')?.value || '',
+    nome: $('clienteNomeCadastro').value.trim(),
+    apelido: $('clienteApelidoCadastro').value.trim(),
+    dataNascimento: $('clienteDataNascimentoCadastro').value,
+    cpfCnpj: $('clienteCpfCadastro').value.trim(),
+    rg: $('clienteRgCadastro').value.trim(),
+    email: $('clienteEmailCadastro').value.trim(),
+    celular: $('clienteCelularCadastro').value.trim(),
+    endereco: $('clienteEnderecoCadastro').value.trim(),
+    numero: $('clienteNumeroCadastro').value.trim(),
+    complemento: $('clienteComplementoCadastro').value.trim(),
+    bairro: $('clienteBairroCadastro').value.trim(),
+    idCidade: Number(cidadeId?.value) || null,
+    cidade: cidadeNome?.value || '',
+    cep: $('clienteCepCadastro').value.trim(),
+    ativo: $('clienteAtivoCadastro').value === 'true',
+    genero: $('clienteGeneroCadastro').value,
+    idCondicaoPagamento: Number(condicaoSelect.value) || null,
+    formaPagamento: condicaoSelect.options[condicaoSelect.selectedIndex]?.textContent || '',
+    limiteCredito: obterDecimal($('clienteLimiteCreditoCadastro').value)
+  };
+}
+
 function dadosFornecedor() {
-  const cidadeSelect = $('fornecedorCidadeCadastro');
+  const cidadeId = $('fornecedorCidadeCadastro');
+  const cidadeNome = $('fornecedorCidadeNomeCadastro');
   const condicaoSelect = $('fornecedorFormaPagamentoCadastro');
 
   return {
+    tipo: $('fornecedorTipoCadastro').value,
     nome: $('fornecedorNomeCadastro').value.trim(),
     apelido: $('fornecedorApelidoCadastro').value.trim(),
+    genero: $('fornecedorGeneroCadastro').value,
     dataNascimento: $('fornecedorDataNascimentoCadastro').value,
-    cpfCnpj: $('fornecedorCpfCnpjCadastro').value.trim(),
-    rg: $('fornecedorRgCadastro').value.trim(),
-    email: $('fornecedorEmailCadastro').value.trim(),
-    celular: $('fornecedorCelularCadastro').value.trim(),
-    telefone: $('fornecedorTelefoneCadastro').value.trim(),
+    cep: $('fornecedorCepCadastro').value.trim(),
     endereco: $('fornecedorEnderecoCadastro').value.trim(),
     numero: $('fornecedorNumeroCadastro').value.trim(),
-    complemento: $('fornecedorComplementoCadastro').value.trim(),
     bairro: $('fornecedorBairroCadastro').value.trim(),
-    idCidade: Number(cidadeSelect.value) || null,
-    cep: $('fornecedorCepCadastro').value.trim(),
-    ativo: $('fornecedorAtivoCadastro').value === 'true',
-    genero: $('fornecedorGeneroCadastro').value,
+    complemento: $('fornecedorComplementoCadastro').value.trim(),
+    idCidade: Number(cidadeId?.value) || null,
+    cidade: cidadeNome?.value || '',
+    celular: $('fornecedorCelularCadastro').value.trim(),
+    email: $('fornecedorEmailCadastro').value.trim(),
+    cpfCnpj: $('fornecedorCpfCnpjCadastro').value.trim(),
+    rg: $('fornecedorRgCadastro').value.trim(),
     idCondicaoPagamento: Number(condicaoSelect.value) || null,
-    limiteCredito: obterDecimal($('fornecedorLimiteCreditoCadastro').value)
+    formaPagamento: condicaoSelect.options[condicaoSelect.selectedIndex]?.textContent || '',
+    limiteCredito: obterDecimal($('fornecedorLimiteCreditoCadastro').value),
+    ativo: $('fornecedorAtivoCadastro').value === 'true'
   };
 }
 
 async function salvarFornecedor(event) {
   event.preventDefault();
+
+  if (!validarCadastroObrigatorio('fornecedor')) {
+    return;
+  }
+
   const codigoEditando = Number($('fornecedorCodigoCadastro').value);
   const fornecedor = dadosFornecedor();
 
@@ -1115,6 +1602,7 @@ async function salvarFornecedor(event) {
     limparFormFornecedor();
     atualizarTudoCadastrosEVenda();
     mostrarMensagem('Fornecedor salvo com sucesso!', 'sucesso');
+    fecharFormularioCadastro('fornecedor');
   } catch (erro) {
     console.error(erro);
     mostrarMensagem(mensagemErroApi(erro, 'salvar fornecedor'), 'erro');
@@ -1126,6 +1614,7 @@ function editarFornecedor(codigo) {
   if (!fornecedor) return;
 
   $('fornecedorCodigoCadastro').value = fornecedor.codigo;
+  $('fornecedorTipoCadastro').value = fornecedor.tipo || '';
   $('fornecedorNomeCadastro').value = fornecedor.nome || '';
   $('fornecedorApelidoCadastro').value = fornecedor.apelido || '';
   $('fornecedorDataNascimentoCadastro').value = normalizarData(fornecedor.dataNascimento);
@@ -1133,7 +1622,6 @@ function editarFornecedor(codigo) {
   $('fornecedorRgCadastro').value = fornecedor.rg || '';
   $('fornecedorEmailCadastro').value = fornecedor.email || '';
   $('fornecedorCelularCadastro').value = fornecedor.celular || '';
-  $('fornecedorTelefoneCadastro').value = fornecedor.telefone || '';
   $('fornecedorEnderecoCadastro').value = fornecedor.endereco || '';
   $('fornecedorNumeroCadastro').value = fornecedor.numero || '';
   $('fornecedorComplementoCadastro').value = fornecedor.complemento || '';
@@ -1146,6 +1634,8 @@ function editarFornecedor(codigo) {
   $('fornecedorFormaPagamentoCadastro').value = fornecedor.idCondicaoPagamento || '';
   $('fornecedorLimiteCreditoCadastro').value = fornecedor.limiteCredito || 0;
   atualizarSelectsAnimados();
+
+  abrirFormularioCadastro('fornecedor');
 }
 
 async function excluirFornecedor(codigo) {
@@ -1176,31 +1666,36 @@ function limparFormFornecedor() {
 
 function dadosFuncionario() {
   return {
+    tipo: $('funcionarioTipoCadastro').value,
     funcionario: $('funcionarioNomeCadastro').value.trim(),
     apelido: $('funcionarioApelidoCadastro').value.trim(),
+    genero: $('funcionarioGeneroCadastro').value,
     dataNascimento: $('funcionarioDataNascimentoCadastro').value,
-    cpf: $('funcionarioCpfCadastro').value.trim(),
-    rg: $('funcionarioRgCadastro').value.trim(),
-    cnh: $('funcionarioCnhCadastro').value.trim(),
-    carteiraTrabalho: $('funcionarioCarteiraTrabalhoCadastro').value.trim(),
-    idCargo: Number($('funcionarioCargoCadastro').value) || null,
-    email: $('funcionarioEmailCadastro').value.trim(),
-    celular: $('funcionarioCelularCadastro').value.trim(),
-    telefone: $('funcionarioTelefoneCadastro').value.trim(),
+    cep: $('funcionarioCepCadastro').value.trim(),
     endereco: $('funcionarioEnderecoCadastro').value.trim(),
     numero: $('funcionarioNumeroCadastro').value.trim(),
-    complemento: $('funcionarioComplementoCadastro').value.trim(),
     bairro: $('funcionarioBairroCadastro').value.trim(),
+    complemento: $('funcionarioComplementoCadastro').value.trim(),
     idCidade: Number($('funcionarioCidadeCadastro').value) || null,
-    cep: $('funcionarioCepCadastro').value.trim(),
+    celular: $('funcionarioCelularCadastro').value.trim(),
+    email: $('funcionarioEmailCadastro').value.trim(),
+    cpf: $('funcionarioCpfCadastro').value.trim(),
+    rg: $('funcionarioRgCadastro').value.trim(),
+    idCargo: Number($('funcionarioCargoCadastro').value) || null,
+    cnh: $('funcionarioCnhCadastro').value.trim(),
+    carteiraTrabalho: $('funcionarioCarteiraTrabalhoCadastro').value.trim(),
     salario: obterDecimal($('funcionarioSalarioCadastro').value),
-    ativo: $('funcionarioAtivoCadastro').value === 'true',
-    genero: $('funcionarioGeneroCadastro').value
+    ativo: $('funcionarioAtivoCadastro').value === 'true'
   };
 }
 
 async function salvarFuncionario(event) {
   event.preventDefault();
+
+  if (!validarCadastroObrigatorio('funcionario')) {
+    return;
+  }
+
   const codigoEditando = Number($('funcionarioCodigoCadastro').value);
   const funcionario = dadosFuncionario();
 
@@ -1223,6 +1718,7 @@ async function salvarFuncionario(event) {
     limparFormFuncionario();
     atualizarTudoCadastrosEVenda();
     mostrarMensagem('Funcionário salvo com sucesso!', 'sucesso');
+    fecharFormularioCadastro('funcionario');
   } catch (erro) {
     console.error(erro);
     mostrarMensagem(mensagemErroApi(erro, 'salvar funcionário'), 'erro');
@@ -1234,6 +1730,7 @@ function editarFuncionario(codigo) {
   if (!funcionario) return;
 
   $('funcionarioCodigoCadastro').value = funcionario.codigo;
+  $('funcionarioTipoCadastro').value = funcionario.tipo || '';
   $('funcionarioNomeCadastro').value = funcionario.funcionario || '';
   $('funcionarioApelidoCadastro').value = funcionario.apelido || '';
   $('funcionarioDataNascimentoCadastro').value = normalizarData(funcionario.dataNascimento);
@@ -1244,7 +1741,6 @@ function editarFuncionario(codigo) {
   $('funcionarioCargoCadastro').value = funcionario.idCargo || '';
   $('funcionarioEmailCadastro').value = funcionario.email || '';
   $('funcionarioCelularCadastro').value = funcionario.celular || '';
-  $('funcionarioTelefoneCadastro').value = funcionario.telefone || '';
   $('funcionarioEnderecoCadastro').value = funcionario.endereco || '';
   $('funcionarioNumeroCadastro').value = funcionario.numero || '';
   $('funcionarioComplementoCadastro').value = funcionario.complemento || '';
@@ -1256,6 +1752,8 @@ function editarFuncionario(codigo) {
   $('funcionarioAtivoCadastro').value = funcionario.ativo === false ? 'false' : 'true';
   $('funcionarioGeneroCadastro').value = funcionario.genero || '';
   atualizarSelectsAnimados();
+
+  abrirFormularioCadastro('funcionario');
 }
 
 async function excluirFuncionario(codigo) {
@@ -1286,19 +1784,26 @@ function limparFormFuncionario() {
 
 function recarregarProdutos() {
   const tabela = $('produtosCadastroTabela');
-  if (!tabela) return;
 
-  tabela.innerHTML = ordenarPorCodigo(produtos).map((produto, indice) => `
+  if (!tabela) {
+    return;
+  }
+
+  tabela.innerHTML = ordenarPorCodigo(produtos).map((itemProduto, indice) => `
     <tr>
       <td>${indice + 1}</td>
-      <td>${produto.nome || '-'}</td>
-      <td>${formatarMoeda(produto.preco)}</td>
-      <td>${produto.estoque}</td>
-      <td>${produto.unidade || 'UN'}</td>
-      <td>${produto.categoria || '-'}</td>
+      <td>${itemProduto.produto || '-'}</td>
+      <td>${itemProduto.marca || '-'}</td>
+      <td>${formatarMoeda(itemProduto.preco)}</td>
+      <td>${formatarMoeda(itemProduto.custo || 0)}</td>
+      <td>${itemProduto.estoque}</td>
+      <td>${itemProduto.unidade || 'UN'}</td>
+      <td>${itemProduto.categoria || '-'}</td>
+      <td>${formatarDataCadastro(itemProduto.dataCadastro || itemProduto.data_cadastro)}</td>
+      <td>${formatarDataCadastro(itemProduto.dataAlteracao || itemProduto.data_alteracao)}</td>
       <td>
-        <button class="btn btn-azul btn-pequeno" onclick="editarProduto(${produto.codigo})">Editar</button>
-        <button class="btn btn-vermelho btn-pequeno" onclick="excluirProduto(${produto.codigo})">Excluir</button>
+        <button class="btn btn-azul btn-pequeno" onclick="editarProduto(${itemProduto.codigo})">Editar</button>
+        <button class="btn btn-vermelho btn-pequeno" onclick="excluirProduto(${itemProduto.codigo})">Excluir</button>
       </td>
     </tr>
   `).join('');
@@ -1378,9 +1883,12 @@ function recarregarFuncionarios() {
 function recarregarProdutosSemEstoque() {
   const tabela = $('produtosSemEstoqueTabela');
   const mensagem = $('mensagemSemEstoque');
-  if (!tabela || !mensagem) return;
 
-  const produtosZerados = produtos.filter(produto => Number(produto.estoque) === 0);
+  if (!tabela || !mensagem) {
+    return;
+  }
+
+  const produtosZerados = produtos.filter(itemProduto => Number(itemProduto.estoque) === 0);
 
   if (produtosZerados.length === 0) {
     mensagem.textContent = 'Nenhum produto sem estoque no momento.';
@@ -1392,14 +1900,14 @@ function recarregarProdutosSemEstoque() {
   mensagem.textContent = `Atenção: existem ${produtosZerados.length} produto(s) sem estoque. Verifique a necessidade de reposição.`;
   mensagem.className = 'mensagem-estoque mensagem-alerta';
 
-  tabela.innerHTML = produtosZerados.map(produto => `
+  tabela.innerHTML = produtosZerados.map(itemProduto => `
     <tr>
-      <td>${produto.codigo}</td>
-      <td>${produto.nome}</td>
-      <td>${produto.categoria || '-'}</td>
-      <td>${formatarMoeda(produto.preco)}</td>
-      <td>${produto.estoque}</td>
-      <td>${produto.unidade || 'UN'}</td>
+      <td>${itemProduto.codigo}</td>
+      <td>${itemProduto.produto}</td>
+      <td>${itemProduto.categoria || '-'}</td>
+      <td>${formatarMoeda(itemProduto.preco)}</td>
+      <td>${itemProduto.estoque}</td>
+      <td>${itemProduto.unidade || 'UN'}</td>
       <td>Produto sem estoque. Necessário repor.</td>
     </tr>
   `).join('');
@@ -1515,6 +2023,212 @@ function recarregarProdutosMaisVendidosDashboard() {
   `).join('');
 }
 
+function formatarDataCadastro(valor) {
+  if (!valor) {
+    return '-';
+  }
+
+  const data = new Date(valor);
+
+  if (Number.isNaN(data.getTime())) {
+    return '-';
+  }
+
+  return data.toLocaleString(cultura);
+}
+
+async function salvarMarca(event) {
+  event.preventDefault();
+
+  const codigo = Number($('marcaCodigoCadastro')?.value);
+
+  const dadosMarca = {
+    marca: $('marcaNomeCadastro')?.value.trim().toUpperCase() || '',
+    ativo: $('marcaAtivoCadastro')?.value === 'true'
+  };
+
+  if (!dadosMarca.marca) {
+    mostrarMensagem('Informe a marca.', 'aviso');
+    return;
+  }
+
+  try {
+    if (codigo) {
+      await apiPut(`/marcas/${codigo}`, dadosMarca);
+    } else {
+      await apiPost('/marcas', dadosMarca);
+    }
+
+    marcas = await apiGet('/marcas');
+
+    limparFormMarca();
+    atualizarTudoCadastrosEVenda();
+
+    mostrarMensagem('Marca salva com sucesso.', 'sucesso');
+
+    fecharFormularioCadastro('marca');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'salvar marca'), 'erro');
+  }
+}
+
+function editarMarca(codigo) {
+  const itemMarca = marcas.find(item => Number(item.codigo) === Number(codigo));
+
+  if (!itemMarca) {
+    return;
+  }
+
+  $('marcaCodigoCadastro').value = itemMarca.codigo;
+  $('marcaNomeCadastro').value = itemMarca.marca || '';
+  $('marcaAtivoCadastro').value = itemMarca.ativo === false ? 'false' : 'true';
+
+  atualizarSelectAnimado($('marcaAtivoCadastro'));
+
+  abrirFormularioCadastro('marca');
+}
+
+async function excluirMarca(codigo) {
+  const itemMarca = marcas.find(item => Number(item.codigo) === Number(codigo));
+
+  if (!itemMarca) {
+    mostrarMensagem('Marca não encontrada.', 'aviso');
+    return;
+  }
+
+  const confirmar = confirm(`Deseja excluir a marca "${itemMarca.marca}"?`);
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    await apiDelete(`/marcas/${codigo}`);
+
+    marcas = await apiGet('/marcas');
+
+    limparFormMarca();
+    atualizarTudoCadastrosEVenda();
+
+    mostrarMensagem('Marca excluída com sucesso.', 'sucesso');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'excluir marca'), 'erro');
+  }
+}
+
+function limparFormMarca() {
+  $('formMarca')?.reset();
+
+  if ($('marcaCodigoCadastro')) {
+    $('marcaCodigoCadastro').value = '';
+  }
+
+  atualizarSelectsAnimados();
+}
+
+async function salvarFormaPagamento(event) {
+  event.preventDefault();
+
+  const codigo = Number($('formaPagamentoCodigoCadastro')?.value);
+
+  const dados = {
+    formaPagamento: $('formaPagamentoDescricaoCadastro')?.value.trim().toUpperCase() || '',
+    ativo: $('formaPagamentoAtivoCadastro')?.value === 'true'
+  };
+
+  if (!dados.formaPagamento) {
+    mostrarMensagem('Informe a forma de pagamento.', 'aviso');
+    return;
+  }
+
+  try {
+    if (codigo) {
+      await apiPut(`/formas-pagamento/${codigo}`, dados);
+    } else {
+      await apiPost('/formas-pagamento', dados);
+    }
+
+    formasPagamentoCadastro = await apiGet('/formas-pagamento');
+
+    limparFormFormaPagamento();
+    atualizarTudoCadastrosEVenda();
+
+    mostrarMensagem('Forma de pagamento salva com sucesso.', 'sucesso');
+
+    fecharFormularioCadastro('formaPagamento');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'salvar forma de pagamento'), 'erro');
+  }
+}
+
+function editarFormaPagamento(codigo) {
+  const forma = formasPagamentoCadastro.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!forma) {
+    return;
+  }
+
+  $('formaPagamentoCodigoCadastro').value = forma.codigo;
+  $('formaPagamentoDescricaoCadastro').value = forma.formaPagamento || '';
+  $('formaPagamentoAtivoCadastro').value = forma.ativo === false ? 'false' : 'true';
+
+  atualizarSelectAnimado($('formaPagamentoAtivoCadastro'));
+
+  abrirFormularioCadastro('formaPagamento');
+}
+
+async function excluirFormaPagamento(codigo) {
+  const forma = formasPagamentoCadastro.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!forma) {
+    mostrarMensagem('Forma de pagamento não encontrada.', 'aviso');
+    return;
+  }
+
+  const confirmar = confirm(
+    `Deseja excluir a forma de pagamento "${forma.formaPagamento}"?`
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    await apiDelete(`/formas-pagamento/${codigo}`);
+
+    formasPagamentoCadastro = await apiGet('/formas-pagamento');
+
+    limparFormFormaPagamento();
+    atualizarTudoCadastrosEVenda();
+
+    mostrarMensagem('Forma de pagamento excluída com sucesso.', 'sucesso');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'excluir forma de pagamento'), 'erro');
+  }
+}
+
+function limparFormFormaPagamento() {
+  $('formFormaPagamento')?.reset();
+
+  if ($('formaPagamentoCodigoCadastro')) {
+    $('formaPagamentoCodigoCadastro').value = '';
+  }
+
+  if ($('formaPagamentoAtivoCadastro')) {
+    $('formaPagamentoAtivoCadastro').value = 'true';
+  }
+
+  atualizarSelectsAnimados();
+}
+
 function recarregarLocalidades() {
   const paisesTabela = $('paisesCadastroTabela');
   const estadosTabela = $('estadosCadastroTabela');
@@ -1522,6 +2236,8 @@ function recarregarLocalidades() {
   const cargosTabela = $('cargosCadastroTabela');
   const categoriasTabela = $('categoriasCadastroTabela');
   const condicoesTabela = $('condicoesPagamentoTabela');
+  const marcasTabela = $('marcasCadastroTabela');
+  const formasPagamentoTabela = $('formasPagamentoCadastroTabela');
 
   if (paisesTabela) {
     paisesTabela.innerHTML = ordenarPorCodigo(paises).map((p, indice) => `
@@ -1557,7 +2273,10 @@ function recarregarLocalidades() {
       <tr>
         <td>${indice + 1}</td>
         <td>${c.estado || '-'}</td>
-        <td>${c.cidade}</td>
+        <td>${c.cidade || '-'}</td>
+        <td>${c.ddd || '-'}</td>
+        <td>${formatarDataCadastro(c.dataCadastro || c.data_cadastro)}</td>
+        <td>${formatarDataCadastro(c.dataAlteracao || c.data_alteracao)}</td>
         <td>
           <button class="btn btn-azul btn-pequeno" onclick="editarCidade(${c.codigo})">Editar</button>
           <button class="btn btn-vermelho btn-pequeno" onclick="excluirCidade(${c.codigo})">Excluir</button>
@@ -1593,14 +2312,76 @@ function recarregarLocalidades() {
   }
 
   if (condicoesTabela) {
-    condicoesTabela.innerHTML = ordenarPorCodigo(condicoesPagamento).map((c, indice) => `
+    condicoesTabela.innerHTML = ordenarPorCodigo(condicoesPagamento).map((c, indice) => {
+      const multa = c.multaPercentual ?? c.multa_percentual ?? 0;
+      const juros = c.jurosPercentual ?? c.juros_percentual ?? 0;
+      const desconto = c.descontoPercentual ?? c.desconto_percentual ?? 0;
+
+      return `
+        <tr>
+          <td>${indice + 1}</td>
+
+          <td>${c.descricao || '-'}</td>
+
+          <td>${c.parcelas || 0}</td>
+
+          <td>${Number(multa || 0).toFixed(2).replace('.', ',')}%</td>
+
+          <td>${Number(juros || 0).toFixed(2).replace('.', ',')}%</td>
+
+          <td>${Number(desconto || 0).toFixed(2).replace('.', ',')}%</td>
+
+          <td>${c.ativo === false ? 'Inativo' : 'Ativo'}</td>
+
+          <td>
+            <button
+              class="btn btn-azul btn-pequeno"
+              type="button"
+              onclick="editarCondicaoPagamento(${c.codigo})"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn btn-vermelho btn-pequeno"
+              type="button"
+              onclick="excluirCondicaoPagamento(${c.codigo})"
+            >
+              Excluir
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  if (marcasTabela) {
+    marcasTabela.innerHTML = ordenarPorCodigo(marcas).map((m, indice) => `
       <tr>
         <td>${indice + 1}</td>
-        <td>${c.descricao}</td>
-        <td>${c.parcelas}</td>
-        <td>${c.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>${m.marca || '-'}</td>
+        <td>${m.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>${formatarDataCadastro(m.dataCadastro || m.data_cadastro)}</td>
+        <td>${formatarDataCadastro(m.dataAlteracao || m.data_alteracao)}</td>
         <td>
-          <button class="btn btn-azul btn-pequeno" onclick="editarCondicaoPagamento(${c.codigo})">Editar</button>
+          <button class="btn btn-azul btn-pequeno" onclick="editarMarca(${m.codigo})">Editar</button>
+          <button class="btn btn-vermelho btn-pequeno" onclick="excluirMarca(${m.codigo})">Excluir</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  if (formasPagamentoTabela) {
+    formasPagamentoTabela.innerHTML = ordenarPorCodigo(formasPagamentoCadastro).map((forma, indice) => `
+      <tr>
+        <td>${indice + 1}</td>
+        <td>${forma.formaPagamento || '-'}</td>
+        <td>${forma.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>${formatarDataCadastro(forma.dataCadastro || forma.data_cadastro)}</td>
+        <td>${formatarDataCadastro(forma.dataAlteracao || forma.data_alteracao)}</td>
+        <td>
+          <button class="btn btn-azul btn-pequeno" onclick="editarFormaPagamento(${forma.codigo})">Editar</button>
+          <button class="btn btn-vermelho btn-pequeno" onclick="excluirFormaPagamento(${forma.codigo})">Excluir</button>
         </td>
       </tr>
     `).join('');
@@ -1609,6 +2390,10 @@ function recarregarLocalidades() {
 
 async function salvarGenerico(event, tipo) {
   event.preventDefault();
+
+  if (!validarCadastroObrigatorio(tipo)) {
+    return;
+  }
 
   const mapa = {
     pais: {
@@ -1630,10 +2415,16 @@ async function salvarGenerico(event, tipo) {
     cidade: {
       codigo: $('cidadeCodigoCadastro'),
       caminho: '/cidades',
-      dados: () => ({ idEstado: Number($('cidadeEstadoCadastro').value), cidade: $('cidadeNomeCadastro').value.trim() }),
+      dados: () => ({
+        idEstado: Number($('cidadeEstadoCadastro').value),
+        cidade: $('cidadeNomeCadastro').value.trim().toUpperCase(),
+        ddd: $('cidadeDddCadastro')?.value.trim() || ''
+      }),
       validar: dados => dados.idEstado && dados.cidade,
       erro: 'Informe estado e cidade.',
-      recarregar: async () => { cidades = await apiGet('/cidades'); }
+      recarregar: async () => {
+        cidades = await apiGet('/cidades');
+      }
     },
     cargo: {
       codigo: $('cargoCodigoCadastro'),
@@ -1664,6 +2455,35 @@ async function salvarGenerico(event, tipo) {
   const config = mapa[tipo];
   const dados = config.dados();
 
+  const camposObrigatoriosPorTipo = {
+    pais: [
+      { id: 'paisNomeCadastro', nome: 'País' }
+    ],
+    estado: [
+      { id: 'estadoPaisCadastro', nome: 'País' },
+      { id: 'estadoNomeCadastro', nome: 'Estado' },
+      { id: 'estadoSiglaCadastro', nome: 'Sigla' }
+    ],
+    cidade: [
+      { id: 'cidadeEstadoCadastro', nome: 'Estado' },
+      { id: 'cidadeNomeCadastro', nome: 'Cidade' }
+    ],
+    cargo: [
+      { id: 'cargoNomeCadastro', nome: 'Cargo' }
+    ],
+    categoria: [
+      { id: 'categoriaNomeCadastro', nome: 'Categoria' }
+    ],
+    condicao: [
+      { id: 'condicaoDescricaoCadastro', nome: 'Descrição' },
+      { id: 'condicaoParcelasCadastro', nome: 'Parcelas' }
+    ]
+  };
+
+  if (!validarCamposObrigatorios(camposObrigatoriosPorTipo[tipo] || [])) {
+    return;
+  }
+
   if (!config.validar(dados)) {
     mostrarMensagem(config.erro, 'aviso');
     return;
@@ -1675,9 +2495,10 @@ async function salvarGenerico(event, tipo) {
     else await apiPost(config.caminho, dados);
 
     await config.recarregar();
-    limparLocalidades();
+    limparFormularioLocalidade(tipo);
     atualizarTudoCadastrosEVenda();
     mostrarMensagem('Cadastro salvo com sucesso.', 'sucesso');
+    fecharFormularioCadastro(tipo);
   } catch (erro) {
     console.error(erro);
     mostrarMensagem(mensagemErroApi(erro, 'salvar cadastro'), 'erro');
@@ -1690,25 +2511,45 @@ function editarPais(codigo) {
   $('paisCodigoCadastro').value = p.codigo;
   $('paisNomeCadastro').value = p.pais || '';
   $('paisSiglaCadastro').value = p.sigla || '';
+
+  abrirFormularioCadastro('pais');
 }
 
 function editarEstado(codigo) {
   const e = estados.find(item => Number(item.codigo) === Number(codigo));
   if (!e) return;
   $('estadoCodigoCadastro').value = e.codigo;
-  $('estadoPaisCadastro').value = e.idPais || '';
   $('estadoNomeCadastro').value = e.estado || '';
   $('estadoSiglaCadastro').value = e.uf || '';
-  atualizarSelectAnimado($('estadoPaisCadastro'));
+  $('estadoPaisCadastro').value = e.idPais || '';
+  $('estadoPaisNomeCadastro').value = `${e.pais || ''} - ${e.uf ? '' : ''}`.trim();
+
+  const pais = paises.find(p => Number(p.codigo) === Number(e.idPais));
+
+  if (pais) {
+    $('estadoPaisNomeCadastro').value = `${pais.pais} - ${pais.sigla || ''}`;
+  }
+
+  abrirFormularioCadastro('estado');
 }
 
 function editarCidade(codigo) {
   const c = cidades.find(item => Number(item.codigo) === Number(codigo));
-  if (!c) return;
+
+  if (!c) {
+    return;
+  }
+
   $('cidadeCodigoCadastro').value = c.codigo;
-  $('cidadeEstadoCadastro').value = c.idEstado || '';
   $('cidadeNomeCadastro').value = c.cidade || '';
-  atualizarSelectAnimado($('cidadeEstadoCadastro'));
+  $('cidadeEstadoCadastro').value = c.idEstado || '';
+  $('cidadeEstadoNomeCadastro').value = `${c.estado || ''} - ${c.uf || ''}`;
+
+  if ($('cidadeDddCadastro')) {
+    $('cidadeDddCadastro').value = c.ddd || '';
+  }
+
+  abrirFormularioCadastro('cidade');
 }
 
 function editarCargo(codigo) {
@@ -1716,6 +2557,8 @@ function editarCargo(codigo) {
   if (!c) return;
   $('cargoCodigoCadastro').value = c.codigo;
   $('cargoNomeCadastro').value = c.cargo || '';
+
+  abrirFormularioCadastro('cargo');
 }
 
 function editarCategoria(codigo) {
@@ -1723,6 +2566,8 @@ function editarCategoria(codigo) {
   if (!categoria) return;
   $('categoriaCodigoCadastro').value = categoria.codigo;
   $('categoriaNomeCadastro').value = categoria.nome || '';
+
+  abrirFormularioCadastro('categoria');
 }
 
 async function excluirCategoria(codigo) {
@@ -1751,21 +2596,99 @@ async function excluirCategoria(codigo) {
   }
 }
 
+async function excluirCondicaoPagamento(codigo) {
+  const condicao = condicoesPagamento.find(item => Number(item.codigo) === Number(codigo));
+
+  if (!condicao) {
+    mostrarMensagem('Condição de pagamento não encontrada.', 'aviso');
+    return;
+  }
+
+  const confirmar = confirm(
+    `Deseja realmente excluir a condição "${condicao.descricao}"?`
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    await apiDelete(`/condicoes-pagamento/${codigo}`);
+
+    condicoesPagamento = await apiGet('/condicoes-pagamento');
+
+    limparLocalidades();
+    atualizarTudoCadastrosEVenda();
+    recarregarLocalidades();
+
+    mostrarMensagem('Condição excluída com sucesso.', 'sucesso');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'excluir condição de pagamento'), 'erro');
+  }
+}
+
 function editarCondicaoPagamento(codigo) {
   const c = condicoesPagamento.find(item => Number(item.codigo) === Number(codigo));
-  if (!c) return;
+
+  if (!c) {
+    return;
+  }
+
   $('condicaoCodigoCadastro').value = c.codigo;
   $('condicaoDescricaoCadastro').value = c.descricao || '';
   $('condicaoParcelasCadastro').value = c.parcelas || 1;
+
+  const parcela = parcelas.find(item => {
+    return Number(item.quantidade) === Number(c.parcelas);
+  });
+
+  if (parcela) {
+    $('condicaoParcelaNomeCadastro').value = `${parcela.descricao} - ${parcela.quantidade}x`;
+  } else {
+    $('condicaoParcelaNomeCadastro').value = `${c.parcelas || 1} parcela(s)`;
+  }
+
   $('condicaoAtivoCadastro').value = c.ativo === false ? 'false' : 'true';
+
   atualizarSelectAnimado($('condicaoAtivoCadastro'));
+
+  abrirFormularioCadastro('condicao');
 }
 
 function limparLocalidades() {
-  ['formPais', 'formEstado', 'formCidade', 'formCargo', 'formCategoria', 'formCondicaoPagamento'].forEach(id => $(id)?.reset());
-  ['paisCodigoCadastro', 'estadoCodigoCadastro', 'cidadeCodigoCadastro', 'cargoCodigoCadastro', 'categoriaCodigoCadastro', 'condicaoCodigoCadastro'].forEach(id => {
-    if ($(id)) $(id).value = '';
+  [
+    'formPais',
+    'formEstado',
+    'formCidade',
+    'formCargo',
+    'formCategoria',
+    'formCondicaoPagamento',
+    'formUnidade',
+    'formParcela'
+  ].forEach(id => {
+    $(id)?.reset();
   });
+
+  [
+    'paisCodigoCadastro',
+    'estadoCodigoCadastro',
+    'cidadeCodigoCadastro',
+    'cargoCodigoCadastro',
+    'categoriaCodigoCadastro',
+    'condicaoCodigoCadastro',
+    'unidadeCodigoCadastro',
+    'parcelaCodigoCadastro'
+  ].forEach(id => {
+    if ($(id)) {
+      $(id).value = '';
+    }
+  });
+
+  if ($('condicaoParcelaNomeCadastro')) {
+    $('condicaoParcelaNomeCadastro').value = '';
+  }
+
   atualizarSelectsAnimados();
 }
 
@@ -1862,7 +2785,7 @@ function mascaraCpfCnpj(valor) {
     .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
 }
 
-function mascaraTelefone(valor) {
+function mascaraCelular(valor) {
   const numeros = valor.replace(/\D/g, '').slice(0, 11);
 
   if (numeros.length <= 10) {
@@ -1900,9 +2823,9 @@ function aplicarMascaras() {
     event.target.value = mascaraCpfCnpj(event.target.value).slice(0, 14);
   });
 
-  ['clienteCelularCadastro', 'clienteTelefoneCadastro', 'fornecedorCelularCadastro', 'fornecedorTelefoneCadastro', 'funcionarioCelularCadastro', 'funcionarioTelefoneCadastro'].forEach(id => {
+  ['clienteCelularCadastro', 'fornecedorCelularCadastro', 'funcionarioCelularCadastro',].forEach(id => {
     $(id)?.addEventListener('input', event => {
-      event.target.value = mascaraTelefone(event.target.value);
+      event.target.value = mascaraCelular(event.target.value);
     });
   });
 
@@ -1917,6 +2840,21 @@ function aplicarMascaras() {
       event.target.value = mascaraRg(event.target.value);
     });
   });
+
+  document.querySelectorAll('input, select, textarea').forEach(campo => {
+    campo.addEventListener('input', () => {
+      if (String(campo.value || '').trim()) {
+        campo.classList.remove('input-obrigatorio-vazio');
+      }
+    });
+
+    campo.addEventListener('change', () => {
+      if (String(campo.value || '').trim()) {
+        campo.classList.remove('input-obrigatorio-vazio');
+      }
+    });
+  });
+
 }
 
 function atualizarSelectAnimado(select) {
@@ -2057,10 +2995,1507 @@ function filtrarCidadesPorEstado(prefixo) {
   atualizarSelectsAnimados();
 }
 
+function abrirFormularioCadastro(tipo) {
+  const mapa = mapaFormulariosCadastro();
+  const idForm = mapa[tipo];
+
+  if (!idForm) {
+    mostrarMensagem(`Formulário não encontrado: ${tipo}`, 'erro');
+    return;
+  }
+
+  const formCard = $(idForm);
+
+  if (!formCard) {
+    mostrarMensagem(`Card do formulário não encontrado: ${idForm}`, 'erro');
+    return;
+  }
+
+  formCard.classList.remove('oculto');
+
+  document.body.style.overflow = 'hidden';
+
+  atualizarSelectsAnimados();
+}
+
+function fecharFormularioCadastro(tipo) {
+  const mapa = mapaFormulariosCadastro();
+  const idForm = mapa[tipo];
+
+  if (!idForm) {
+    return;
+  }
+
+  const formCard = $(idForm);
+
+  if (formCard) {
+    formCard.classList.add('oculto');
+
+    formCard.classList.remove(
+      'modal-cadastro-secundario',
+      'modal-nivel-1',
+      'modal-nivel-2',
+      'modal-nivel-3',
+      'modal-nivel-4'
+    );
+  }
+
+  if (formCard && formulariosMovidos[tipo]) {
+    const localOriginal = formulariosMovidos[tipo];
+
+    if (localOriginal.proximoIrmao) {
+      localOriginal.paiOriginal.insertBefore(formCard, localOriginal.proximoIrmao);
+    } else {
+      localOriginal.paiOriginal.appendChild(formCard);
+    }
+
+    delete formulariosMovidos[tipo];
+  }
+
+  const existeFormularioAberto = document.querySelector(
+    '.cadastro-form-card:not(.oculto)'
+  );
+
+  if (!existeFormularioAberto) {
+    document.body.style.overflow = '';
+  }
+
+  limparErrosObrigatorios();
+}
+
+function fecharFormularioAbertoComEsc(event) {
+  if (event.key !== 'Escape') {
+    return;
+  }
+
+  [
+    'cliente',
+    'fornecedor',
+    'funcionario',
+    'produto',
+    'pais',
+    'estado',
+    'cidade',
+    'cargo',
+    'categoria',
+    'marca',
+    'formaPagamento',
+    'condicao',
+    'unidade',
+    'parcela'
+  ].forEach(tipo => {
+    fecharFormularioCadastro(tipo);
+  });
+}
+
+let callbackConsultaSelecao = null;
+let dadosConsultaSelecao = [];
+
+const formulariosMovidos = {};
+
+function abrirModalConsultaSelecao(config) {
+  const modal = $('modalConsultaSelecao');
+  const titulo = $('modalConsultaTitulo');
+  const filtro = $('modalConsultaFiltro');
+  const head = $('modalConsultaHead');
+  const body = $('modalConsultaBody');
+
+  if (!modal || !titulo || !filtro || !head || !body) {
+    return;
+  }
+
+  callbackConsultaSelecao = config.aoSelecionar;
+  dadosConsultaSelecao = config.dados || [];
+
+  titulo.textContent = config.titulo;
+  filtro.value = '';
+
+  const topo = titulo.closest('.modal-consulta-topo');
+
+  if (topo) {
+    topo.querySelectorAll('.btn-consulta-extra').forEach(botao => {
+      botao.remove();
+    });
+
+    if (config.botaoNovo) {
+      const botaoNovo = document.createElement('button');
+
+      botaoNovo.type = 'button';
+      botaoNovo.className = 'btn btn-verde btn-consulta-extra';
+      botaoNovo.textContent = config.botaoNovo.texto || 'Novo';
+
+      botaoNovo.addEventListener('click', event => {
+        event.stopPropagation();
+
+        if (typeof config.botaoNovo.acao === 'function') {
+          config.botaoNovo.acao();
+        }
+      });
+
+      const botaoFechar = $('btnFecharConsultaSelecao');
+
+      if (botaoFechar) {
+        topo.insertBefore(botaoNovo, botaoFechar);
+      } else {
+        topo.appendChild(botaoNovo);
+      }
+    }
+  }
+
+  head.innerHTML = config.head;
+
+  renderizarConsultaSelecao(config);
+
+  filtro.oninput = () => {
+    renderizarConsultaSelecao(config);
+  };
+
+  modal.classList.add('mostrar');
+}
+
+function renderizarConsultaSelecao(config) {
+  const filtro = String($('modalConsultaFiltro')?.value || '').toLowerCase();
+  const body = $('modalConsultaBody');
+
+  if (!body) {
+    return;
+  }
+
+  const dadosFiltrados = dadosConsultaSelecao.filter(item => {
+    return config.filtro(item).toLowerCase().includes(filtro);
+  });
+
+  if (dadosFiltrados.length === 0) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="6">Nenhum registro encontrado.</td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  body.innerHTML = dadosFiltrados.map(item => config.linha(item)).join('');
+
+  body.querySelectorAll('tr[data-codigo]').forEach(tr => {
+    tr.addEventListener('click', event => {
+      if (event.target.closest('button')) {
+        return;
+      }
+
+      const codigo = Number(tr.dataset.codigo);
+
+      const item = dadosConsultaSelecao.find(registro => {
+        return Number(registro.codigo) === codigo;
+      });
+
+      if (item && callbackConsultaSelecao) {
+        callbackConsultaSelecao(item);
+      }
+
+      fecharModalConsultaSelecao();
+    });
+  });
+
+  body.querySelectorAll('[data-editar-cidade]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarCidade);
+
+      editarCidadePelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-estado]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarEstado);
+
+      editarEstadoPelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-pais]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarPais);
+
+      editarPaisPelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-categoria]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarCategoria);
+
+      editarCategoriaPelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-unidade]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarUnidade);
+
+      editarUnidadePelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-parcela]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarParcela);
+
+      editarParcelaPelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-marca]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarMarca);
+
+      editarMarcaPelaConsulta(codigo);
+    });
+  });
+
+  body.querySelectorAll('[data-editar-forma-pagamento]').forEach(botao => {
+    botao.addEventListener('click', event => {
+      event.stopPropagation();
+
+      const codigo = Number(botao.dataset.editarFormaPagamento);
+
+      editarFormaPagamentoPelaConsulta(codigo);
+    });
+  });
+
+}
+
+function fecharModalConsultaSelecao() {
+  $('modalConsultaSelecao')?.classList.remove('mostrar');
+  callbackConsultaSelecao = null;
+  dadosConsultaSelecao = [];
+}
+
+function abrirConsultaPaises(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Países',
+
+    dados: ordenarPorCodigo(paises),
+
+    botaoNovo: {
+      texto: 'Novo País',
+      acao: abrirCadastroPaisPelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>País</th>
+        <th>Sigla</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: pais => {
+      return `${pais.codigo} ${pais.pais} ${pais.sigla || ''}`;
+    },
+
+    linha: pais => `
+      <tr data-codigo="${pais.codigo}">
+        <td>${pais.codigo}</td>
+        <td>${pais.pais}</td>
+        <td>${pais.sigla || '-'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-pais="${pais.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function abrirConsultaEstados(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Estados',
+
+    dados: ordenarPorCodigo(estados),
+
+    botaoNovo: {
+      texto: 'Novo Estado',
+      acao: abrirCadastroEstadoPelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Estado</th>
+        <th>UF</th>
+        <th>País</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: estado => {
+      return `${estado.codigo} ${estado.estado} ${estado.uf} ${estado.pais || ''}`;
+    },
+
+    linha: estado => `
+      <tr data-codigo="${estado.codigo}">
+        <td>${estado.codigo}</td>
+        <td>${estado.estado}</td>
+        <td>${estado.uf}</td>
+        <td>${estado.pais || '-'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-estado="${estado.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+let paiOriginalFormularioCidade = null;
+let proximoIrmaoFormularioCidade = null;
+
+function mapaFormulariosCadastro() {
+  return {
+    cliente: 'formCardCliente',
+    fornecedor: 'formCardFornecedor',
+    funcionario: 'formCardFuncionario',
+    produto: 'formCardProduto',
+    pais: 'formCardPais',
+    estado: 'formCardEstado',
+    cidade: 'formCardCidade',
+    cargo: 'formCardCargo',
+    categoria: 'formCardCategoria',
+    marca: 'formCardMarca',
+    formaPagamento: 'formCardFormaPagamento',
+    condicao: 'formCardCondicao',
+    unidade: 'formCardUnidade',
+    parcela: 'formCardParcela'
+  };
+}
+
+function limparFormularioLocalidade(tipo) {
+  const mapa = {
+    pais: {
+      form: 'formPais',
+      codigo: 'paisCodigoCadastro'
+    },
+    estado: {
+      form: 'formEstado',
+      codigo: 'estadoCodigoCadastro'
+    },
+    cidade: {
+      form: 'formCidade',
+      codigo: 'cidadeCodigoCadastro'
+    },
+    cargo: {
+      form: 'formCargo',
+      codigo: 'cargoCodigoCadastro'
+    },
+    categoria: {
+      form: 'formCategoria',
+      codigo: 'categoriaCodigoCadastro'
+    },
+    condicao: {
+      form: 'formCondicaoPagamento',
+      codigo: 'condicaoCodigoCadastro'
+    }
+  };
+
+  const config = mapa[tipo];
+
+  if (!config) {
+    return;
+  }
+
+  $(config.form)?.reset();
+
+  if ($(config.codigo)) {
+    $(config.codigo).value = '';
+  }
+
+  atualizarSelectsAnimados();
+}
+
+function abrirFormularioCadastroSecundario(tipo) {
+  const mapa = mapaFormulariosCadastro();
+  const idForm = mapa[tipo];
+  const formCard = $(idForm);
+
+  if (!formCard) {
+    mostrarMensagem(`Formulário não encontrado: ${tipo}`, 'erro');
+    return;
+  }
+
+  if (!formulariosMovidos[tipo]) {
+    formulariosMovidos[tipo] = {
+      paiOriginal: formCard.parentNode,
+      proximoIrmao: formCard.nextSibling
+    };
+  }
+
+  document.body.appendChild(formCard);
+
+  formCard.classList.remove('oculto');
+  formCard.classList.add('modal-cadastro-secundario');
+
+  formCard.classList.remove(
+    'modal-nivel-1',
+    'modal-nivel-2',
+    'modal-nivel-3',
+    'modal-nivel-4'
+  );
+
+  const quantidadeAbertos = document.querySelectorAll(
+    '.cadastro-form-card.modal-cadastro-secundario:not(.oculto)'
+  ).length;
+
+  formCard.classList.add(`modal-nivel-${Math.min(quantidadeAbertos, 4)}`);
+
+  document.body.style.overflow = 'hidden';
+
+  atualizarSelectsAnimados();
+}
+
+function abrirCadastroCidadePelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  limparFormularioLocalidade('cidade');
+
+  abrirFormularioCadastroSecundario('cidade');
+
+  const campoCidade = $('cidadeNomeCadastro');
+
+  if (campoCidade) {
+    campoCidade.focus();
+  }
+}
+
+function abrirCadastroEstadoPelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  limparFormularioLocalidade('estado');
+
+  abrirFormularioCadastroSecundario('estado');
+
+  const campoEstado = $('estadoNomeCadastro');
+
+  if (campoEstado) {
+    campoEstado.focus();
+  }
+}
+
+function abrirCadastroPaisPelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  limparFormularioLocalidade('pais');
+
+  abrirFormularioCadastroSecundario('pais');
+
+  const campoPais = $('paisNomeCadastro');
+
+  if (campoPais) {
+    campoPais.focus();
+  }
+}
+
+function editarCidadePelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const cidade = cidades.find(item => Number(item.codigo) === Number(codigo));
+
+  if (!cidade) {
+    mostrarMensagem('Cidade não encontrada.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('cidade');
+
+  $('cidadeCodigoCadastro').value = cidade.codigo;
+  $('cidadeNomeCadastro').value = cidade.cidade || '';
+  $('cidadeEstadoCadastro').value = cidade.idEstado || '';
+  $('cidadeEstadoNomeCadastro').value = `${cidade.estado || ''} - ${cidade.uf || ''}`;
+
+  const campoCidade = $('cidadeNomeCadastro');
+
+  if (campoCidade) {
+    campoCidade.focus();
+  }
+
+  atualizarSelectsAnimados();
+}
+
+function editarEstadoPelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const estado = estados.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!estado) {
+    mostrarMensagem('Estado não encontrado.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('estado');
+
+  $('estadoCodigoCadastro').value = estado.codigo;
+  $('estadoNomeCadastro').value = estado.estado || '';
+  $('estadoSiglaCadastro').value = estado.uf || '';
+  $('estadoPaisCadastro').value = estado.idPais || '';
+
+  const pais = paises.find(item => {
+    return Number(item.codigo) === Number(estado.idPais);
+  });
+
+  if (pais) {
+    $('estadoPaisNomeCadastro').value = `${pais.pais} - ${pais.sigla || ''}`;
+  } else {
+    $('estadoPaisNomeCadastro').value = estado.pais || '';
+  }
+
+  const campoEstado = $('estadoNomeCadastro');
+
+  if (campoEstado) {
+    campoEstado.focus();
+  }
+
+  atualizarSelectsAnimados();
+}
+
+function editarPaisPelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const pais = paises.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!pais) {
+    mostrarMensagem('País não encontrado.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('pais');
+
+  $('paisCodigoCadastro').value = pais.codigo;
+  $('paisNomeCadastro').value = pais.pais || '';
+  $('paisSiglaCadastro').value = pais.sigla || '';
+
+  const campoPais = $('paisNomeCadastro');
+
+  if (campoPais) {
+    campoPais.focus();
+  }
+
+  atualizarSelectsAnimados();
+}
+
+function abrirCadastroCategoriaPelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  limparFormularioLocalidade('categoria');
+
+  abrirFormularioCadastroSecundario('categoria');
+
+  $('categoriaNomeCadastro')?.focus();
+}
+
+function editarCategoriaPelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const categoria = categorias.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!categoria) {
+    mostrarMensagem('Categoria não encontrada.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('categoria');
+
+  $('categoriaCodigoCadastro').value = categoria.codigo;
+  $('categoriaNomeCadastro').value = categoria.nome || '';
+
+  $('categoriaNomeCadastro')?.focus();
+}
+
+function abrirCadastroUnidadePelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  $('formUnidade')?.reset();
+
+  if ($('unidadeCodigoCadastro')) {
+    $('unidadeCodigoCadastro').value = '';
+  }
+
+  abrirFormularioCadastroSecundario('unidade');
+
+  $('unidadeSiglaCadastro')?.focus();
+
+  atualizarSelectsAnimados();
+}
+
+function editarUnidadePelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const unidade = unidades.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!unidade) {
+    mostrarMensagem('Unidade não encontrada.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('unidade');
+
+  $('unidadeCodigoCadastro').value = unidade.codigo;
+  $('unidadeSiglaCadastro').value = unidade.unidade || '';
+  $('unidadeDescricaoCadastro').value = unidade.descricao || '';
+  $('unidadeAtivoCadastro').value = unidade.ativo === false ? 'false' : 'true';
+
+  atualizarSelectAnimado($('unidadeAtivoCadastro'));
+
+  $('unidadeSiglaCadastro')?.focus();
+}
+
+function abrirCadastroParcelaPelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  $('formParcela')?.reset();
+
+  if ($('parcelaCodigoCadastro')) {
+    $('parcelaCodigoCadastro').value = '';
+  }
+
+  abrirFormularioCadastroSecundario('parcela');
+
+  $('parcelaDescricaoCadastro')?.focus();
+
+  atualizarSelectsAnimados();
+}
+
+function editarParcelaPelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const parcela = parcelas.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!parcela) {
+    mostrarMensagem('Parcela não encontrada.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('parcela');
+
+  $('parcelaCodigoCadastro').value = parcela.codigo;
+  $('parcelaDescricaoCadastro').value = parcela.descricao || '';
+  $('parcelaQuantidadeCadastro').value = parcela.quantidade || 1;
+  $('parcelaAtivoCadastro').value = parcela.ativo === false ? 'false' : 'true';
+
+  atualizarSelectAnimado($('parcelaAtivoCadastro'));
+
+  $('parcelaDescricaoCadastro')?.focus();
+}
+
+function abrirConsultaCidades(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Cidades',
+
+    dados: ordenarPorCodigo(cidades),
+
+    botaoNovo: {
+      texto: 'Nova Cidade',
+      acao: abrirCadastroCidadePelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Cidade</th>
+        <th>UF</th>
+        <th>Estado</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: cidade => {
+      return `${cidade.codigo} ${cidade.cidade} ${cidade.uf || ''} ${cidade.estado || ''}`;
+    },
+
+    linha: cidade => `
+      <tr data-codigo="${cidade.codigo}">
+        <td>${cidade.codigo}</td>
+        <td>${cidade.cidade}</td>
+        <td>${cidade.uf || '-'}</td>
+        <td>${cidade.estado || '-'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-cidade="${cidade.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function abrirConsultaCategorias(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Categorias',
+
+    dados: ordenarPorCodigo(categorias),
+
+    botaoNovo: {
+      texto: 'Nova Categoria',
+      acao: abrirCadastroCategoriaPelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Categoria</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: categoria => {
+      return `${categoria.codigo} ${categoria.nome || ''}`;
+    },
+
+    linha: categoria => `
+      <tr data-codigo="${categoria.codigo}">
+        <td>${categoria.codigo}</td>
+        <td>${categoria.nome}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-categoria="${categoria.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function abrirConsultaUnidades(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Unidades',
+
+    dados: ordenarPorCodigo(unidades),
+
+    botaoNovo: {
+      texto: 'Nova Unidade',
+      acao: abrirCadastroUnidadePelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Unidade</th>
+        <th>Descrição</th>
+        <th>Ativo</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: unidade => {
+      return `${unidade.codigo} ${unidade.unidade || ''} ${unidade.descricao || ''}`;
+    },
+
+    linha: unidade => `
+      <tr data-codigo="${unidade.codigo}">
+        <td>${unidade.codigo}</td>
+        <td>${unidade.unidade}</td>
+        <td>${unidade.descricao}</td>
+        <td>${unidade.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-unidade="${unidade.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function abrirConsultaParcelas(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Parcelas',
+
+    dados: ordenarPorCodigo(parcelas),
+
+    botaoNovo: {
+      texto: 'Nova Parcela',
+      acao: abrirCadastroParcelaPelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Descrição</th>
+        <th>Quantidade</th>
+        <th>Ativo</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: parcela => {
+      return `${parcela.codigo} ${parcela.descricao || ''} ${parcela.quantidade || ''}`;
+    },
+
+    linha: parcela => `
+      <tr data-codigo="${parcela.codigo}">
+        <td>${parcela.codigo}</td>
+        <td>${parcela.descricao}</td>
+        <td>${parcela.quantidade}</td>
+        <td>${parcela.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-parcela="${parcela.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function selecionarPaisNoCadastroEstado(pais) {
+  $('estadoPaisCadastro').value = pais.codigo;
+  $('estadoPaisNomeCadastro').value = `${pais.pais} - ${pais.sigla || ''}`;
+}
+
+function selecionarEstadoNoCadastroCidade(estado) {
+  $('cidadeEstadoCadastro').value = estado.codigo;
+  $('cidadeEstadoNomeCadastro').value = `${estado.estado} - ${estado.uf}`;
+}
+
+function selecionarCidadeNoCadastro(prefixo, cidade) {
+  $(`${prefixo}CidadeCadastro`).value = cidade.codigo;
+  $(`${prefixo}CidadeNomeCadastro`).value = cidade.cidade || '';
+  $(`${prefixo}UfCadastro`).value = cidade.uf || '';
+}
+
+function selecionarCategoriaNoProduto(categoria) {
+  $('produtoCategoriaCadastro').value = categoria.nome || '';
+  $('produtoCategoriaNomeCadastro').value = categoria.nome || '';
+}
+
+function selecionarUnidadeNoProduto(unidade) {
+  $('produtoUnidadeCadastro').value = unidade.unidade || '';
+  $('produtoUnidadeNomeCadastro').value = `${unidade.unidade} - ${unidade.descricao || ''}`;
+}
+
+function selecionarParcelaNaCondicao(parcela) {
+  $('condicaoParcelasCadastro').value = parcela.quantidade || 1;
+  $('condicaoParcelaNomeCadastro').value = `${parcela.descricao} - ${parcela.quantidade}x`;
+}
+
+function selecionarMarcaNoProduto(itemMarca) {
+  $('produtoMarcaCadastro').value = itemMarca.marca || '';
+  $('produtoMarcaNomeCadastro').value = itemMarca.marca || '';
+}
+
+function selecionarFormaPagamentoNaVenda(forma) {
+  $('formaPagamentoSelect').value = forma.formaPagamento || '';
+  $('formaPagamentoNomeVenda').value = forma.formaPagamento || '';
+}
+
+function selecionarFormaPagamentoNaCondicao(forma) {
+  $('condicaoParcelaFormaCadastro').value = forma.formaPagamento || '';
+
+  if ($('condicaoParcelaFormaNomeCadastro')) {
+    $('condicaoParcelaFormaNomeCadastro').value = forma.formaPagamento || '';
+  }
+}
+
+function abrirConsultaFormasPagamento(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Formas de Pagamento',
+
+    dados: ordenarPorCodigo(
+      formasPagamentoCadastro.filter(item => item.ativo !== false)
+    ),
+
+    botaoNovo: {
+      texto: 'Nova Forma de Pagamento',
+      acao: abrirCadastroFormaPagamentoPelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Forma de Pagamento</th>
+        <th>Ativo</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: forma => {
+      return `${forma.codigo} ${forma.formaPagamento || ''}`;
+    },
+
+    linha: forma => `
+      <tr data-codigo="${forma.codigo}">
+        <td>${forma.codigo}</td>
+        <td>${forma.formaPagamento || '-'}</td>
+        <td>${forma.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-forma-pagamento="${forma.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function abrirCadastroFormaPagamentoPelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  limparFormFormaPagamento();
+
+  abrirFormularioCadastroSecundario('formaPagamento');
+
+  $('formaPagamentoDescricaoCadastro')?.focus();
+}
+
+function editarFormaPagamentoPelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const forma = formasPagamentoCadastro.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!forma) {
+    mostrarMensagem('Forma de pagamento não encontrada.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('formaPagamento');
+
+  $('formaPagamentoCodigoCadastro').value = forma.codigo;
+  $('formaPagamentoDescricaoCadastro').value = forma.formaPagamento || '';
+  $('formaPagamentoAtivoCadastro').value = forma.ativo === false ? 'false' : 'true';
+
+  atualizarSelectAnimado($('formaPagamentoAtivoCadastro'));
+
+  $('formaPagamentoDescricaoCadastro')?.focus();
+}
+
+function abrirConsultaMarcas(callback) {
+  abrirModalConsultaSelecao({
+    titulo: 'Consulta de Marcas',
+
+    dados: ordenarPorCodigo(marcas),
+
+    botaoNovo: {
+      texto: 'Nova Marca',
+      acao: abrirCadastroMarcaPelaConsulta
+    },
+
+    head: `
+      <tr>
+        <th>Cód.</th>
+        <th>Marca</th>
+        <th>Ativo</th>
+        <th>Ações</th>
+      </tr>
+    `,
+
+    filtro: itemMarca => {
+      return `${itemMarca.codigo} ${itemMarca.marca || ''}`;
+    },
+
+    linha: itemMarca => `
+      <tr data-codigo="${itemMarca.codigo}">
+        <td>${itemMarca.codigo}</td>
+        <td>${itemMarca.marca || '-'}</td>
+        <td>${itemMarca.ativo === false ? 'Inativo' : 'Ativo'}</td>
+        <td>
+          <button
+            class="btn btn-azul btn-pequeno"
+            type="button"
+            data-editar-marca="${itemMarca.codigo}"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    `,
+
+    aoSelecionar: callback
+  });
+}
+
+function abrirCadastroMarcaPelaConsulta() {
+  fecharModalConsultaSelecao();
+
+  limparFormMarca();
+
+  abrirFormularioCadastroSecundario('marca');
+
+  $('marcaNomeCadastro')?.focus();
+}
+
+function editarMarcaPelaConsulta(codigo) {
+  fecharModalConsultaSelecao();
+
+  const itemMarca = marcas.find(item => Number(item.codigo) === Number(codigo));
+
+  if (!itemMarca) {
+    mostrarMensagem('Marca não encontrada.', 'erro');
+    return;
+  }
+
+  abrirFormularioCadastroSecundario('marca');
+
+  $('marcaCodigoCadastro').value = itemMarca.codigo;
+  $('marcaNomeCadastro').value = itemMarca.marca || '';
+  $('marcaAtivoCadastro').value = itemMarca.ativo === false ? 'false' : 'true';
+
+  atualizarSelectAnimado($('marcaAtivoCadastro'));
+
+  $('marcaNomeCadastro')?.focus();
+}
+
+async function salvarUnidade(event) {
+  event.preventDefault();
+
+  const codigo = Number($('unidadeCodigoCadastro').value);
+
+  const unidade = {
+    unidade: $('unidadeSiglaCadastro').value.trim().toUpperCase(),
+    descricao: $('unidadeDescricaoCadastro').value.trim(),
+    ativo: $('unidadeAtivoCadastro').value === 'true'
+  };
+
+  if (!unidade.unidade || !unidade.descricao) {
+    mostrarMensagem('Informe unidade e descrição.', 'aviso');
+    return;
+  }
+
+  try {
+    if (codigo) {
+      await apiPut(`/unidades/${codigo}`, unidade);
+    } else {
+      await apiPost('/unidades', unidade);
+    }
+
+    unidades = await apiGet('/unidades');
+
+    mostrarMensagem('Unidade salva com sucesso.', 'sucesso');
+
+    fecharFormularioCadastro('unidade');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'salvar unidade'), 'erro');
+  }
+}
+
+async function salvarParcela(event) {
+  event.preventDefault();
+
+  const codigo = Number($('parcelaCodigoCadastro').value);
+
+  const parcela = {
+    descricao: $('parcelaDescricaoCadastro').value.trim(),
+    quantidade: Number($('parcelaQuantidadeCadastro').value) || 1,
+    ativo: $('parcelaAtivoCadastro').value === 'true'
+  };
+
+  if (!parcela.descricao || !parcela.quantidade) {
+    mostrarMensagem('Informe descrição e quantidade.', 'aviso');
+    return;
+  }
+
+  try {
+    if (codigo) {
+      await apiPut(`/parcelas/${codigo}`, parcela);
+    } else {
+      await apiPost('/parcelas', parcela);
+    }
+
+    parcelas = await apiGet('/parcelas');
+
+    mostrarMensagem('Parcela salva com sucesso.', 'sucesso');
+
+    fecharFormularioCadastro('parcela');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'salvar parcela'), 'erro');
+  }
+}
+
+/* =========================================================
+   CONDIÇÃO DE PAGAMENTO COM PARCELAS DETALHADAS
+   ========================================================= */
+
+let parcelasCondicaoAtual = [];
+let indiceParcelaCondicaoEditando = null;
+
+function formatarPercentualCondicao(valor) {
+  return `${Number(valor || 0).toFixed(2).replace('.', ',')}%`;
+}
+
+function totalPercentualParcelasCondicao() {
+  return parcelasCondicaoAtual.reduce((total, parcela) => {
+    return total + Number(parcela.percentual || 0);
+  }, 0);
+}
+
+function atualizarTotalPercentualCondicao() {
+  const total = totalPercentualParcelasCondicao();
+
+  if ($('condicaoTotalPercentualCadastro')) {
+    $('condicaoTotalPercentualCadastro').value = formatarPercentualCondicao(total);
+  }
+}
+
+function limparCamposParcelaCondicao() {
+  if ($('condicaoParcelaNumeroCadastro')) {
+    $('condicaoParcelaNumeroCadastro').value = parcelasCondicaoAtual.length + 1;
+  }
+
+  if ($('condicaoParcelaDiasCadastro')) {
+    $('condicaoParcelaDiasCadastro').value = '';
+  }
+
+  if ($('condicaoParcelaPercentualCadastro')) {
+    $('condicaoParcelaPercentualCadastro').value = '';
+  }
+
+  if ($('condicaoParcelaFormaCadastro')) {
+    $('condicaoParcelaFormaCadastro').value = '';
+  }
+
+  if ($('condicaoParcelaFormaNomeCadastro')) {
+    $('condicaoParcelaFormaNomeCadastro').value = '';
+  }
+
+  indiceParcelaCondicaoEditando = null;
+
+  atualizarSelectsAnimados();
+}
+
+function renderizarParcelasCondicao() {
+  const tabela = $('condicaoParcelasTabela');
+
+  if (!tabela) {
+    return;
+  }
+
+  if (parcelasCondicaoAtual.length === 0) {
+    tabela.innerHTML = `
+      <tr>
+        <td colspan="5">Nenhuma parcela adicionada.</td>
+      </tr>
+    `;
+
+    atualizarTotalPercentualCondicao();
+    return;
+  }
+
+  tabela.innerHTML = parcelasCondicaoAtual.map((parcela, indice) => `
+    <tr>
+      <td>${parcela.numeroParcela}</td>
+      <td>${parcela.dias}</td>
+      <td>${formatarPercentualCondicao(parcela.percentual)}</td>
+      <td>${parcela.formaPagamento}</td>
+      <td>
+        <button
+          class="btn btn-azul btn-pequeno"
+          type="button"
+          onclick="editarParcelaCondicao(${indice})"
+        >
+          Editar
+        </button>
+
+        <button
+          class="btn btn-vermelho btn-pequeno"
+          type="button"
+          onclick="excluirParcelaCondicao(${indice})"
+        >
+          Excluir
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  atualizarTotalPercentualCondicao();
+}
+
+function adicionarParcelaCondicao() {
+  const numeroParcela = Number($('condicaoParcelaNumeroCadastro')?.value) || 0;
+  const dias = Number($('condicaoParcelaDiasCadastro')?.value) || 0;
+  const percentual = obterDecimal($('condicaoParcelaPercentualCadastro')?.value);
+  const formaPagamento = $('condicaoParcelaFormaCadastro')?.value || '';
+
+  if (!numeroParcela) {
+    mostrarMensagem('Informe o número da parcela.', 'aviso');
+    return;
+  }
+
+  if (percentual <= 0) {
+    mostrarMensagem('Informe o percentual da parcela.', 'aviso');
+    return;
+  }
+
+  if (!formaPagamento) {
+    mostrarMensagem('Informe a forma de pagamento da parcela.', 'aviso');
+    return;
+  }
+
+  const parcela = {
+    numeroParcela,
+    dias,
+    percentual,
+    formaPagamento
+  };
+
+  if (indiceParcelaCondicaoEditando !== null) {
+    parcelasCondicaoAtual[indiceParcelaCondicaoEditando] = parcela;
+  } else {
+    parcelasCondicaoAtual.push(parcela);
+  }
+
+  parcelasCondicaoAtual.sort((a, b) => {
+    return Number(a.numeroParcela) - Number(b.numeroParcela);
+  });
+
+  limparCamposParcelaCondicao();
+  renderizarParcelasCondicao();
+}
+
+function editarParcelaCondicao(indice) {
+  const parcela = parcelasCondicaoAtual[indice];
+
+  if (!parcela) {
+    return;
+  }
+
+  indiceParcelaCondicaoEditando = indice;
+
+  $('condicaoParcelaNumeroCadastro').value = parcela.numeroParcela;
+  $('condicaoParcelaDiasCadastro').value = parcela.dias;
+  $('condicaoParcelaPercentualCadastro').value = String(parcela.percentual).replace('.', ',');
+  $('condicaoParcelaFormaCadastro').value = parcela.formaPagamento;
+
+  if ($('condicaoParcelaFormaNomeCadastro')) {
+    $('condicaoParcelaFormaNomeCadastro').value = parcela.formaPagamento;
+  }
+}
+
+function excluirParcelaCondicao(indice) {
+  parcelasCondicaoAtual.splice(indice, 1);
+
+  parcelasCondicaoAtual = parcelasCondicaoAtual.map((parcela, novoIndice) => {
+    return {
+      ...parcela,
+      numeroParcela: novoIndice + 1
+    };
+  });
+
+  limparCamposParcelaCondicao();
+  renderizarParcelasCondicao();
+}
+
+function limparFormCondicaoPagamentoCompleto() {
+  $('formCondicaoPagamento')?.reset();
+
+  if ($('condicaoCodigoCadastro')) {
+    $('condicaoCodigoCadastro').value = '';
+  }
+
+  parcelasCondicaoAtual = [];
+  indiceParcelaCondicaoEditando = null;
+
+  limparCamposParcelaCondicao();
+  renderizarParcelasCondicao();
+  atualizarSelectsAnimados();
+}
+
+function dadosCondicaoPagamentoCompleta() {
+  return {
+    descricao: $('condicaoDescricaoCadastro')?.value.trim() || '',
+    parcelas: parcelasCondicaoAtual.length,
+    multaPercentual: obterDecimal($('condicaoMultaCadastro')?.value),
+    jurosPercentual: obterDecimal($('condicaoJurosCadastro')?.value),
+    descontoPercentual: obterDecimal($('condicaoDescontoCadastro')?.value),
+    ativo: $('condicaoAtivoCadastro')?.value === 'true',
+    parcelasDetalhadas: parcelasCondicaoAtual
+  };
+}
+
+async function salvarCondicaoPagamentoCompleta(event) {
+  event.preventDefault();
+
+  const codigo = Number($('condicaoCodigoCadastro')?.value);
+  const dados = dadosCondicaoPagamentoCompleta();
+
+  if (!dados.descricao) {
+    mostrarMensagem('Informe a condição de pagamento.', 'aviso');
+    return;
+  }
+
+  if (dados.parcelasDetalhadas.length === 0) {
+    mostrarMensagem('Adicione pelo menos uma parcela.', 'aviso');
+    return;
+  }
+
+  const total = totalPercentualParcelasCondicao();
+
+  if (Math.abs(total - 100) > 0.05) {
+    mostrarMensagem('O total das parcelas precisa fechar 100%.', 'erro');
+    return;
+  }
+
+  try {
+    if (codigo) {
+      await apiPut(`/condicoes-pagamento/${codigo}`, dados);
+    } else {
+      await apiPost('/condicoes-pagamento', dados);
+    }
+
+    condicoesPagamento = await apiGet('/condicoes-pagamento');
+
+    limparFormCondicaoPagamentoCompleto();
+    atualizarTudoCadastrosEVenda();
+
+    mostrarMensagem('Condição de pagamento salva com sucesso.', 'sucesso');
+
+    fecharFormularioCadastro('condicao');
+  } catch (erro) {
+    console.error(erro);
+    mostrarMensagem(mensagemErroApi(erro, 'salvar condição de pagamento'), 'erro');
+  }
+}
+
+function editarCondicaoPagamento(codigo) {
+  const condicao = condicoesPagamento.find(item => {
+    return Number(item.codigo) === Number(codigo);
+  });
+
+  if (!condicao) {
+    return;
+  }
+
+  $('condicaoCodigoCadastro').value = condicao.codigo;
+  $('condicaoDescricaoCadastro').value = condicao.descricao || '';
+  $('condicaoMultaCadastro').value = condicao.multaPercentual || condicao.multa_percentual || 0;
+  $('condicaoJurosCadastro').value = condicao.jurosPercentual || condicao.juros_percentual || 0;
+  $('condicaoDescontoCadastro').value = condicao.descontoPercentual || condicao.desconto_percentual || 0;
+  $('condicaoAtivoCadastro').value = condicao.ativo === false ? 'false' : 'true';
+
+  parcelasCondicaoAtual = [];
+
+  if (Array.isArray(condicao.parcelasDetalhadas)) {
+    parcelasCondicaoAtual = condicao.parcelasDetalhadas.map(parcela => {
+      return {
+        numeroParcela: Number(parcela.numeroParcela || parcela.numero_parcela),
+        dias: Number(parcela.dias),
+        percentual: Number(parcela.percentual),
+        formaPagamento: parcela.formaPagamento || parcela.forma_pagamento
+      };
+    });
+  } else if (Array.isArray(condicao.parcelas_detalhadas)) {
+    parcelasCondicaoAtual = condicao.parcelas_detalhadas.map(parcela => {
+      return {
+        numeroParcela: Number(parcela.numeroParcela || parcela.numero_parcela),
+        dias: Number(parcela.dias),
+        percentual: Number(parcela.percentual),
+        formaPagamento: parcela.formaPagamento || parcela.forma_pagamento
+      };
+    });
+  }
+
+  if (parcelasCondicaoAtual.length === 0 && Number(condicao.parcelas || 0) > 0) {
+    const quantidade = Number(condicao.parcelas);
+    const percentualBase = Number((100 / quantidade).toFixed(2));
+
+    parcelasCondicaoAtual = Array.from({ length: quantidade }).map((_, indice) => {
+      return {
+        numeroParcela: indice + 1,
+        dias: (indice + 1) * 30,
+        percentual: indice + 1 === quantidade
+          ? Number((100 - percentualBase * (quantidade - 1)).toFixed(2))
+          : percentualBase,
+        formaPagamento: 'Boleto Bancário'
+      };
+    });
+  }
+
+  renderizarParcelasCondicao();
+  limparCamposParcelaCondicao();
+  atualizarSelectsAnimados();
+
+  abrirFormularioCadastro('condicao');
+}
+
+/* =========================
+   EVENTOS
+   ========================= */
+
 function registrarEventos() {
   btnTema?.addEventListener('click', alterarTema);
+
   $('formLogin')?.addEventListener('submit', fazerLogin);
-  btnTema?.addEventListener('click', alterarTema);
+
   $('btnAtualizarDashboard')?.addEventListener('click', async () => {
     await carregarDadosDoBanco(true);
   });
@@ -2073,9 +4508,13 @@ function registrarEventos() {
 
   produtoSelect?.addEventListener('change', atualizarProdutoSelecionado);
   clienteVendaSelect?.addEventListener('change', atualizarCondicaoPagamentoPeloCliente);
+
   quantidadeInput?.addEventListener('keydown', event => {
-    if (event.key === 'Enter') adicionarProduto();
+    if (event.key === 'Enter') {
+      adicionarProduto();
+    }
   });
+
   descontoInput?.addEventListener('input', atualizarTotais);
   recebidoInput?.addEventListener('input', atualizarTotais);
 
@@ -2087,49 +4526,212 @@ function registrarEventos() {
   $('btnLimparHistorico')?.addEventListener('click', limparHistorico);
 
   $('formProduto')?.addEventListener('submit', salvarProduto);
-  $('btnNovoProduto')?.addEventListener('click', limparFormProduto);
+
+  $('btnNovoProduto')?.addEventListener('click', () => {
+    limparFormProduto();
+    abrirFormularioCadastro('produto');
+  });
+
+  $('btnCancelarProduto')?.addEventListener('click', () => {
+    limparFormProduto();
+    fecharFormularioCadastro('produto');
+  });
 
   $('formCliente')?.addEventListener('submit', salvarCliente);
-  $('btnNovoCliente')?.addEventListener('click', limparFormCliente);
+
+  $('btnNovoCliente')?.addEventListener('click', () => {
+    limparFormCliente();
+    abrirFormularioCadastro('cliente');
+  });
+
+  $('btnCancelarCliente')?.addEventListener('click', () => {
+    limparFormCliente();
+    fecharFormularioCadastro('cliente');
+  });
 
   $('formFornecedor')?.addEventListener('submit', salvarFornecedor);
-  $('btnNovoFornecedor')?.addEventListener('click', limparFormFornecedor);
+
+  $('btnNovoFornecedor')?.addEventListener('click', () => {
+    limparFormFornecedor();
+    abrirFormularioCadastro('fornecedor');
+  });
+
+  $('btnCancelarFornecedor')?.addEventListener('click', () => {
+    limparFormFornecedor();
+    fecharFormularioCadastro('fornecedor');
+  });
 
   $('formFuncionario')?.addEventListener('submit', salvarFuncionario);
-  $('btnNovoFuncionario')?.addEventListener('click', limparFormFuncionario);
+
+  $('btnNovoFuncionario')?.addEventListener('click', () => {
+    limparFormFuncionario();
+    abrirFormularioCadastro('funcionario');
+  });
+
+  $('btnCancelarFuncionario')?.addEventListener('click', () => {
+    limparFormFuncionario();
+    fecharFormularioCadastro('funcionario');
+  });
 
   $('formPais')?.addEventListener('submit', event => salvarGenerico(event, 'pais'));
   $('formEstado')?.addEventListener('submit', event => salvarGenerico(event, 'estado'));
   $('formCidade')?.addEventListener('submit', event => salvarGenerico(event, 'cidade'));
   $('formCargo')?.addEventListener('submit', event => salvarGenerico(event, 'cargo'));
   $('formCategoria')?.addEventListener('submit', event => salvarGenerico(event, 'categoria'));
-  $('formCondicaoPagamento')?.addEventListener('submit', event => salvarGenerico(event, 'condicao'));
 
-  $('btnNovoPais')?.addEventListener('click', limparLocalidades);
-  $('btnNovoEstado')?.addEventListener('click', limparLocalidades);
-  $('btnNovoCidade')?.addEventListener('click', limparLocalidades);
-  $('btnNovoCargo')?.addEventListener('click', limparLocalidades);
-  $('btnNovoCategoria')?.addEventListener('click', limparLocalidades);
-  $('btnNovoCondicao')?.addEventListener('click', limparLocalidades);
-  $('btnFecharPermissao')?.addEventListener('click', fecharBloqueioPermissao);
+  $('formCondicaoPagamento')?.addEventListener('submit', salvarCondicaoPagamentoCompleta);
 
-  const btnLimparHistorico = $('btnLimparHistorico');
-
-  if (btnLimparHistorico) {
-    btnLimparHistorico.addEventListener('click', limparHistorico);
-  }
-
-  ['cliente', 'fornecedor', 'funcionario'].forEach(prefixo => {
-    $(`${prefixo}PaisCadastro`)?.addEventListener('change', () => {
-      filtrarEstadosPorPais(prefixo);
-    });
-
-    $(`${prefixo}EstadoCadastro`)?.addEventListener('change', () => {
-      filtrarCidadesPorEstado(prefixo);
-    });
+  $('btnNovoPais')?.addEventListener('click', () => {
+    limparLocalidades();
+    abrirFormularioCadastro('pais');
   });
 
+  $('btnCancelarPais')?.addEventListener('click', () => {
+    limparLocalidades();
+    fecharFormularioCadastro('pais');
+  });
+
+  $('btnNovoEstado')?.addEventListener('click', () => {
+    limparLocalidades();
+    abrirFormularioCadastro('estado');
+  });
+
+  $('btnCancelarEstado')?.addEventListener('click', () => {
+    limparLocalidades();
+    fecharFormularioCadastro('estado');
+  });
+
+  $('btnNovoCidade')?.addEventListener('click', () => {
+    limparLocalidades();
+    abrirFormularioCadastro('cidade');
+  });
+
+  $('btnCancelarCidade')?.addEventListener('click', () => {
+    limparLocalidades();
+    fecharFormularioCadastro('cidade');
+  });
+
+  $('btnNovoCargo')?.addEventListener('click', () => {
+    limparLocalidades();
+    abrirFormularioCadastro('cargo');
+  });
+
+  $('btnCancelarCargo')?.addEventListener('click', () => {
+    limparLocalidades();
+    fecharFormularioCadastro('cargo');
+  });
+
+  $('btnNovoCategoria')?.addEventListener('click', () => {
+    limparLocalidades();
+    abrirFormularioCadastro('categoria');
+  });
+
+  $('btnCancelarCategoria')?.addEventListener('click', () => {
+    limparLocalidades();
+    fecharFormularioCadastro('categoria');
+  });
+
+  $('btnNovoCondicao')?.addEventListener('click', () => {
+    limparFormCondicaoPagamentoCompleto();
+    abrirFormularioCadastro('condicao');
+  });
+
+  $('btnCancelarCondicao')?.addEventListener('click', () => {
+    limparFormCondicaoPagamentoCompleto();
+    fecharFormularioCadastro('condicao');
+  });
+
+  $('btnAdicionarParcelaCondicao')?.addEventListener('click', adicionarParcelaCondicao);
+
+  $('btnFecharPermissao')?.addEventListener('click', fecharBloqueioPermissao);
+  $('btnFecharConsultaSelecao')?.addEventListener('click', fecharModalConsultaSelecao);
+
+  $('btnConsultarPaisEstado')?.addEventListener('click', () => {
+    abrirConsultaPaises(selecionarPaisNoCadastroEstado);
+  });
+
+  $('btnConsultarEstadoCidade')?.addEventListener('click', () => {
+    abrirConsultaEstados(selecionarEstadoNoCadastroCidade);
+  });
+
+  $('btnConsultarCidadeCliente')?.addEventListener('click', () => {
+    abrirConsultaCidades(cidade => selecionarCidadeNoCadastro('cliente', cidade));
+  });
+
+  $('btnConsultarCidadeFornecedor')?.addEventListener('click', () => {
+    abrirConsultaCidades(cidade => selecionarCidadeNoCadastro('fornecedor', cidade));
+  });
+
+  $('btnConsultarCidadeFuncionario')?.addEventListener('click', () => {
+    abrirConsultaCidades(cidade => selecionarCidadeNoCadastro('funcionario', cidade));
+  });
+
+  $('btnConsultarCategoriaProduto')?.addEventListener('click', () => {
+    abrirConsultaCategorias(selecionarCategoriaNoProduto);
+  });
+
+  $('btnConsultarUnidadeProduto')?.addEventListener('click', () => {
+    abrirConsultaUnidades(selecionarUnidadeNoProduto);
+  });
+
+  $('btnConsultarParcelaCondicao')?.addEventListener('click', () => {
+    abrirConsultaParcelas(selecionarParcelaNaCondicao);
+  });
+
+  $('formUnidade')?.addEventListener('submit', salvarUnidade);
+
+  $('btnCancelarUnidade')?.addEventListener('click', () => {
+    fecharFormularioCadastro('unidade');
+  });
+
+  $('formParcela')?.addEventListener('submit', salvarParcela);
+
+  $('btnCancelarParcela')?.addEventListener('click', () => {
+    fecharFormularioCadastro('parcela');
+  });
+
+  $('formMarca')?.addEventListener('submit', salvarMarca);
+
+  $('btnNovoMarca')?.addEventListener('click', () => {
+    limparFormMarca();
+    abrirFormularioCadastro('marca');
+  });
+
+  $('btnCancelarMarca')?.addEventListener('click', () => {
+    limparFormMarca();
+    fecharFormularioCadastro('marca');
+  });
+
+  $('btnConsultarMarcaProduto')?.addEventListener('click', () => {
+    abrirConsultaMarcas(selecionarMarcaNoProduto);
+  });
+
+  $('formFormaPagamento')?.addEventListener('submit', salvarFormaPagamento);
+
+  $('btnNovoFormaPagamento')?.addEventListener('click', () => {
+    limparFormFormaPagamento();
+    abrirFormularioCadastro('formaPagamento');
+  });
+
+  $('btnCancelarFormaPagamento')?.addEventListener('click', () => {
+    limparFormFormaPagamento();
+    fecharFormularioCadastro('formaPagamento');
+  });
+
+  $('btnConsultarFormaPagamentoVenda')?.addEventListener('click', () => {
+    abrirConsultaFormasPagamento(selecionarFormaPagamentoNaVenda);
+  });
+
+  $('btnConsultarFormaPagamentoCondicao')?.addEventListener('click', () => {
+    abrirConsultaFormasPagamento(selecionarFormaPagamentoNaCondicao);
+  });
+
+  document.addEventListener('keydown', fecharFormularioAbertoComEsc);
 }
+
+/* =========================
+   EXCLUSÕES
+   ========================= */
 
 async function excluirPais(codigo) {
   const pais = paises.find(item => Number(item.codigo) === Number(codigo));
@@ -2139,9 +4741,7 @@ async function excluirPais(codigo) {
     return;
   }
 
-  const confirmar = confirm(
-    `Deseja realmente excluir o país "${pais.pais}"?`
-  );
+  const confirmar = confirm(`Deseja realmente excluir o país "${pais.pais}"?`);
 
   if (!confirmar) {
     return;
@@ -2173,9 +4773,7 @@ async function excluirEstado(codigo) {
     return;
   }
 
-  const confirmar = confirm(
-    `Deseja realmente excluir o estado "${estado.estado}"?`
-  );
+  const confirmar = confirm(`Deseja realmente excluir o estado "${estado.estado}"?`);
 
   if (!confirmar) {
     return;
@@ -2206,9 +4804,7 @@ async function excluirCidade(codigo) {
     return;
   }
 
-  const confirmar = confirm(
-    `Deseja realmente excluir a cidade "${cidade.cidade}"?`
-  );
+  const confirmar = confirm(`Deseja realmente excluir a cidade "${cidade.cidade}"?`);
 
   if (!confirmar) {
     return;
@@ -2238,9 +4834,7 @@ async function excluirCargo(codigo) {
     return;
   }
 
-  const confirmar = confirm(
-    `Deseja realmente excluir o cargo "${cargo.cargo}"?`
-  );
+  const confirmar = confirm(`Deseja realmente excluir o cargo "${cargo.cargo}"?`);
 
   if (!confirmar) {
     return;
@@ -2261,6 +4855,10 @@ async function excluirCargo(codigo) {
     mostrarMensagem(mensagemErroApi(erro, 'excluir cargo'), 'erro');
   }
 }
+
+/* =========================
+   FUNÇÕES GLOBAIS
+   ========================= */
 
 window.editarProduto = editarProduto;
 window.excluirProduto = excluirProduto;
@@ -2290,19 +4888,37 @@ window.editarCategoria = editarCategoria;
 window.excluirCategoria = excluirCategoria;
 
 window.editarCondicaoPagamento = editarCondicaoPagamento;
+window.excluirCondicaoPagamento = excluirCondicaoPagamento;
+
+window.editarParcelaCondicao = editarParcelaCondicao;
+window.excluirParcelaCondicao = excluirParcelaCondicao;
+
+window.editarMarca = editarMarca;
+window.excluirMarca = excluirMarca;
+
+window.editarFormaPagamento = editarFormaPagamento;
+window.excluirFormaPagamento = excluirFormaPagamento;
+
 window.fecharBloqueioPermissao = fecharBloqueioPermissao;
-
 window.limparHistorico = limparHistorico;
-
 window.sairDoSistema = sairDoSistema;
+
+/* =========================
+   INICIALIZAÇÃO
+   ========================= */
 
 async function inicializarSistema() {
   registrarEventos();
   aplicarTemaSalvo();
   aplicarMascaras();
   criarSelectsAnimados();
+
+  aplicarAsteriscosObrigatorios();
+  ativarRemocaoErroObrigatorio();
+
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
+
   verificarLoginSalvo();
   atualizarBotoesPorPermissao();
 }
